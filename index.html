@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Portfolio dan CV Al Ikhsan Nahdillah Muis Malik — IT Engineer dengan pengalaman di jaringan komputer, server administration, IT support, dan sistem informasi.">
+  <meta name="author" content="Al Ikhsan Nahdillah Muis Malik">
+  <title>Al Ikhsan Nahdillah Muis Malik | IT Engineer</title>
+
+  <style>
+    :root {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-2: #172033;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --line: rgba(255,255,255,.09);
+      --accent: #60a5fa;
+      --accent-2: #38bdf8;
+      --white: #fff;
+      --max: 1180px;
+      --radius: 18px;
+      --shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+                   "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(56,189,248,.12), transparent 30%),
+        radial-gradient(circle at 90% 10%, rgba(96,165,250,.10), transparent 28%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .container {
+      width: min(calc(100% - 40px), var(--max));
+      margin-inline: auto;
+    }
+
+    /* NAV */
+    .nav-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      background: rgba(11,17,32,.78);
+      border-bottom: 1px solid var(--line);
+    }
+
+    nav {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      font-weight: 800;
+      letter-spacing: -.03em;
+      white-space: nowrap;
+    }
+
+    .brand span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      list-style: none;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .nav-links a:hover { color: var(--white); }
+
+    .menu-btn {
+      display: none;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--white);
+      padding: 9px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    /* HERO */
+    .hero {
+      min-height: 680px;
+      display: grid;
+      align-items: center;
+      padding: 90px 0 80px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.4fr .8fr;
+      gap: 70px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--accent-2);
+      font-size: .85rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 30px;
+      height: 1px;
+      background: var(--accent-2);
+    }
+
+    h1 {
+      font-size: clamp(2.7rem, 6vw, 5.6rem);
+      line-height: .98;
+      letter-spacing: -.06em;
+      max-width: 900px;
+    }
+
+    h1 span {
+      color: var(--accent);
+    }
+
+    .hero-role {
+      margin-top: 24px;
+      font-size: clamp(1.1rem, 2vw, 1.45rem);
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+
+    .hero-description {
+      max-width: 720px;
+      color: var(--muted);
+      margin-top: 18px;
+      font-size: 1.05rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 18px;
+      border-radius: 11px;
+      font-weight: 700;
+      font-size: .92rem;
+      border: 1px solid var(--line);
+      transition: .2s ease;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #07111f;
+      border-color: transparent;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .hero-card {
+      background: linear-gradient(145deg, rgba(96,165,250,.15), rgba(17,24,39,.85));
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .profile-mark {
+      width: 92px;
+      height: 92px;
+      display: grid;
+      place-items: center;
+      border-radius: 24px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #06101d;
+      font-size: 2rem;
+      font-weight: 900;
+      margin-bottom: 28px;
+    }
+
+    .quick-info {
+      display: grid;
+      gap: 17px;
+    }
+
+    .info-item small {
+      display: block;
+      color: var(--muted);
+      font-size: .76rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-bottom: 3px;
+    }
+
+    .info-item strong {
+      font-size: .95rem;
+      word-break: break-word;
+    }
+
+    /* SECTIONS */
+    section { padding: 90px 0; }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: .65fr 1.35fr;
+      gap: 40px;
+      margin-bottom: 45px;
+      align-items: end;
+    }
+
+    .section-label {
+      color: var(--accent);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: .78rem;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 4vw, 3.3rem);
+      letter-spacing: -.05em;
+      line-height: 1;
+    }
+
+    .section-intro {
+      color: var(--muted);
+      max-width: 700px;
+    }
+
+    /* ABOUT */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .about-box {
+      background: rgba(17,24,39,.7);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+
+    .about-box h3 {
+      margin-bottom: 12px;
+      font-size: 1.05rem;
+    }
+
+    .about-box p { color: var(--muted); }
+
+    /* SKILLS */
+    .skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .skill {
+      border: 1px solid rgba(96,165,250,.25);
+      background: rgba(96,165,250,.07);
+      color: #cfe5ff;
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-size: .88rem;
+    }
+
+    /* TIMELINE */
+    .timeline {
+      position: relative;
+      margin-left: 12px;
+      border-left: 1px solid var(--line);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding: 0 0 42px 34px;
+    }
+
+    .timeline-item:last-child { padding-bottom: 0; }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--accent);
+      left: -6px;
+      top: 7px;
+      box-shadow: 0 0 0 5px var(--bg);
+    }
+
+    .timeline-date {
+      color: var(--accent);
+      font-size: .82rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .timeline-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .timeline-company {
+      color: #cbd5e1;
+      margin-bottom: 10px;
+    }
+
+    .timeline-desc {
+      color: var(--muted);
+      max-width: 800px;
+    }
+
+    .timeline-desc ul {
+      padding-left: 19px;
+    }
+
+    /* PROJECTS */
+    .projects {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .project {
+      background: rgba(17,24,39,.78);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: .25s ease;
+    }
+
+    .project:hover {
+      transform: translateY(-4px);
+      border-color: rgba(96,165,250,.35);
+      box-shadow: var(--shadow);
+    }
+
+    .project-year {
+      color: var(--accent);
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+
+    .project h3 {
+      margin: 7px 0 8px;
+      font-size: 1.08rem;
+    }
+
+    .project p {
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .project-link {
+      display: inline-block;
+      margin-top: 14px;
+      color: var(--accent-2);
+      font-size: .86rem;
+      font-weight: 700;
+    }
+
+    /* EDUCATION */
+    .education-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .education {
+      border: 1px solid var(--line);
+      background: rgba(17,24,39,.7);
+      padding: 25px;
+      border-radius: var(--radius);
+    }
+
+    .education-year {
+      color: var(--accent);
+      font-weight: 800;
+      font-size: .82rem;
+    }
+
+    .education h3 { margin-top: 5px; }
+    .education p { color: var(--muted); }
+
+    /* CONTACT */
+    .contact {
+      text-align: center;
+      background: linear-gradient(145deg, rgba(96,165,250,.13), rgba(56,189,248,.04));
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 65px 30px;
+    }
+
+    .contact h2 { margin-bottom: 15px; }
+    .contact p {
+      color: var(--muted);
+      max-width: 650px;
+      margin: 0 auto 28px;
+    }
+
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 25px 0;
+      color: var(--muted);
+      font-size: .82rem;
+      text-align: center;
+    }
+
+    /* PRINT */
+    @media print {
+      .nav-wrap, .hero-actions, .contact { display: none; }
+      body { background: white; color: #111; }
+      .hero, section { padding: 30px 0; min-height: auto; }
+      .hero-card, .about-box, .project, .education {
+        background: white;
+        border-color: #ddd;
+        box-shadow: none;
+      }
+      .timeline { border-color: #ccc; }
+      .timeline-item::before { box-shadow: 0 0 0 5px white; }
+      .muted, .section-intro, .hero-description, .timeline-desc, .project p,
+      .education p, .about-box p { color: #444; }
+    }
+
+    @media (max-width: 850px) {
+      .nav-links {
+        position: absolute;
+        top: 72px;
+        left: 20px;
+        right: 20px;
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        background: rgba(17,24,39,.97);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+
+      .nav-links.open { display: flex; }
+      .nav-links a { display: block; padding: 14px 17px; }
+      .menu-btn { display: block; }
+
+      .hero-grid,
+      .section-head,
+      .about-grid,
+      .education-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .projects { grid-template-columns: 1fr; }
+      .hero { min-height: auto; padding-top: 70px; }
+    }
+
+    @media (max-width: 520px) {
+      .container { width: min(calc(100% - 28px), var(--max)); }
+      section { padding: 65px 0; }
+      .hero { padding: 55px 0; }
+      .hero-card { padding: 22px; }
+      h1 { font-size: 2.7rem; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="nav-wrap">
+    <nav class="container">
+      <a href="#home" class="brand">AL IKHSAN <span>NM</span></a>
+
+      <button class="menu-btn" aria-label="Buka menu" onclick="toggleMenu()">☰</button>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#about">About</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#education">Education</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero" id="home">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">IT Engineer · ICT Technician</div>
+
+          <h1>
+            Al Ikhsan<br>
+            <span>Nahdillah Muis Malik</span>
+          </h1>
+
+          <p class="hero-role">
+            Network Infrastructure · Server Administration · IT Support
+          </p>
+
+          <p class="hero-description">
+            Sarjana Teknik Informatika dengan pengalaman profesional di bidang ICT,
+            administrasi server, jaringan komputer, hardware/software support,
+            serta pengembangan website dan sistem informasi.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#projects">Lihat Portfolio</a>
+            <a class="btn" href="mailto:ikhsannahdillah@gmail.com">Hubungi Saya</a>
+          </div>
+        </div>
+
+        <aside class="hero-card">
+          <div class="profile-mark">AI</div>
+
+          <div class="quick-info">
+            <div class="info-item">
+              <small>Location</small>
+              <strong>Kota Baubau, Sulawesi Tenggara</strong>
+            </div>
+
+            <div class="info-item">
+              <small>Email</small>
+              <strong>ikhsannahdillah@gmail.com</strong>
+            </div>
+
+            <div class="info-item">
+              <small>Phone</small>
+              <strong>0823-9313-1187</strong>
+            </div>
+
+            <div class="info-item">
+              <small>Portfolio</small>
+              <strong>
+                <a href="https://ikhsannahdillah.my.id" target="_blank" rel="noopener">
+                  ikhsannahdillah.my.id ↗
+                </a>
+              </strong>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="section-label">01 · About</div>
+            <h2>Profile</h2>
+          </div>
+
+          <p class="section-intro">
+            Berpengalaman menangani kebutuhan ICT pada lingkungan pemerintah,
+            rumah sakit, perusahaan, dan berbagai proyek infrastruktur teknologi.
+          </p>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-box">
+            <h3>Professional Summary</h3>
+            <p>
+              Sarjana Teknik Informatika dengan 12 tahun pengalaman sebagai ICT
+              Technician. Menyelesaikan beberapa project pada instansi pemerintah
+              maupun swasta dalam pekerjaan administrasi server dan jaringan
+              komputer dengan hasil yang baik.
+            </p>
+          </div>
+
+          <div class="about-box">
+            <h3>Core Expertise</h3>
+            <div class="skills">
+              <span class="skill">Network Infrastructure</span>
+              <span class="skill">Server Administration</span>
+              <span class="skill">Mikrotik</span>
+              <span class="skill">Ruijie</span>
+              <span class="skill">Proxmox</span>
+              <span class="skill">IT Support</span>
+              <span class="skill">CCTV</span>
+              <span class="skill">Hardware & Software</span>
+              <span class="skill">Website</span>
+              <span class="skill">Information Systems</span>
+              <span class="skill">Backup Monitoring</span>
+              <span class="skill">ICT Asset Management</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="section-label">02 · Career</div>
+            <h2>Work Experience</h2>
+          </div>
+
+          <p class="section-intro">
+            Pengalaman profesional dalam ICT support, jaringan komputer,
+            server, infrastruktur, dan koordinasi proyek teknologi.
+          </p>
+        </div>
+
+        <div class="timeline">
+
+          <article class="timeline-item">
+            <div class="timeline-date">2025 — Sekarang</div>
+            <div class="timeline-title">IT Engineer</div>
+            <div class="timeline-company">PT. ENIGMA CIPTA HUMANIKA</div>
+            <div class="timeline-desc">
+              <ul>
+                <li>Instalasi dan pemeliharaan hardware maupun software user (PC, Laptop, Printer, Scanner, IP Phone, Sistem Operasi, Antivirus, Aplikasi, dll).</li>
+                <li>Instalasi dan konfigurasi jaringan komputer dan CCTV.</li>
+                <li>Manajemen budget dan inventaris asset ICT.</li>
+                <li>Manajemen hak akses user dan monitoring backup status server.</li>
+                <li>Support project IT Head Office dan koordinasi dengan vendor terkait.</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="timeline-item">
+            <div class="timeline-date">2019 — 2025</div>
+            <div class="timeline-title">ICT Technician</div>
+            <div class="timeline-company">PT. BINA BAHTERA SEJATI (SILOAM HOSPITALS BAUBAU)</div>
+            <div class="timeline-desc">
+              <ul>
+                <li>Instalasi dan pemeliharaan hardware maupun software user.</li>
+                <li>Instalasi dan konfigurasi jaringan komputer dan CCTV.</li>
+                <li>Manajemen budget dan inventaris asset ICT.</li>
+                <li>Manajemen hak akses user dan monitoring backup status server.</li>
+                <li>Support project IT Head Office dan koordinasi dengan vendor terkait.</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="timeline-item">
+            <div class="timeline-date">2016 — 2018</div>
+            <div class="timeline-title">ICT Technician</div>
+            <div class="timeline-company">BLUD RSUD Kota Baubau</div>
+            <div class="timeline-desc">
+              <ul>
+                <li>Instalasi dan pemeliharaan hardware maupun software user.</li>
+                <li>Instalasi dan pemeliharaan jaringan komputer dan server.</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="timeline-item">
+            <div class="timeline-date">2016 — 2017</div>
+            <div class="timeline-title">Network Support</div>
+            <div class="timeline-company">Dinas KOMINFO Kota Baubau</div>
+            <div class="timeline-desc">
+              <ul>
+                <li>Instalasi dan pemeliharaan jaringan komputer dan server Pemerintah Kota Baubau.</li>
+                <li>Monitoring status dan daily backup server.</li>
+                <li>Manajemen hosting dan domain baubaukota.go.id.</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="timeline-item">
+            <div class="timeline-date">2014 — 2018</div>
+            <div class="timeline-title">Network Support</div>
+            <div class="timeline-company">CV Butuni Java Mandiri</div>
+            <div class="timeline-desc">
+              <ul>
+                <li>Instalasi dan konfigurasi jaringan komputer klien perusahaan.</li>
+                <li>Instalasi dan konfigurasi server-server klien perusahaan.</li>
+                <li>Monitoring dan pemeliharaan jaringan komputer dan server perusahaan.</li>
+              </ul>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="section-label">03 · Portfolio</div>
+            <h2>Selected Projects</h2>
+          </div>
+
+          <p class="section-intro">
+            Beberapa proyek infrastruktur jaringan, server, website, dan sistem
+            informasi yang tercantum dalam CV.
+          </p>
+        </div>
+
+        <div class="projects">
+
+          <article class="project">
+            <div class="project-year">2025</div>
+            <h3>Kantor Walikota Baubau</h3>
+            <p>Konfigurasi Router Ruijie dan Access Point.</p>
+          </article>
+
+          <article class="project">
+            <div class="project-year">2025</div>
+            <h3>PT Meutia Segar</h3>
+            <p>Konfigurasi Router Mikrotik untuk kebutuhan interkoneksi antar cabang.</p>
+          </article>
+
+          <article class="project">
+            <div class="project-year">2025</div>
+            <h3>PLTMG Baubau</h3>
+            <p>Konfigurasi Router Mikrotik dan Access Point.</p>
+          </article>
+
+          <article class="project">
+            <div class="project-year">2025</div>
+            <h3>IKT Buton Raya</h3>
+            <p>Konfigurasi Router Mikrotik dan Access Point.</p>
+          </article>
+
+          <article class="project">
+            <div class="project-year">2024</div>
+            <h3>RSUD Baharuddin Kabupaten Muna</h3>
+            <p>Konfigurasi Router Mikrotik, Access Point dan instalasi server.</p>
+          </article>
+
+          <article class="project">
+            <div class="project-year">2024</div>
+            <h3>Klinik Faga Husada Kota Baubau</h3>
+            <p>Konfigurasi Router Mikrotik, Access Point dan instalasi server.</p>
+          </article>
+
+          <article class="project">
+            <div class="project-year">2024</div>
+            <h3>Klinik Farus Medika Kota Baubau</h3>
+            <p>Konfigurasi Router Mikrotik, Access Point dan server virtualisasi.</p>
+          </article>
+
+          <article class="project">
+            <div class="project-year">2023</div>
+            <h3>Kadena Glamping Dive Resort Buton Tengah</h3>
+            <p>Konfigurasi Router Mikrotik dan Access Point.</p>
+          </article>
+
+          <article class="project">
+            <div class="project-year">2023</div>
+            <h3>PT Bussan Auto Finance Kota Baubau</h3>
+            <p>Konfigurasi perangkat PABX.</p>
+          </article>
+
+          <article class="project">
+            <div class="project-year">2022</div>
+            <h3>BPKAD Kota Baubau</h3>
+            <p>
+              Pembuatan sistem informasi aset tanah dan bangunan.
+              <br>
+              <a class="project-link" href="https://d-inserttabangu.baubaukota.go.id" target="_blank" rel="noopener">
+                d-inserttabangu.baubaukota.go.id ↗
+              </a>
+            </p>
+          </article>
+
+          <article class="project">
+            <div class="project-year">2022</div>
+            <h3>Kantor Unit Penyelenggara Pelabuhan Wanci</h3>
+            <p>
+              Pembuatan website resmi dan sistem informasi pelaporan kegiatan usaha laut.
+              <br>
+              <a class="project-link" href="https://kuppwanci.id" target="_blank" rel="noopener">
+                kuppwanci.id ↗
+              </a>
+              <br>
+              <a class="project-link" href="https://sipenggal.kuppwanci.id" target="_blank" rel="noopener">
+                sipenggal.kuppwanci.id ↗
+              </a>
+            </p>
+          </article>
+
+          <article class="project">
+            <div class="project-year">2022</div>
+            <h3>Universitas Dayanu Ikhsanuddin</h3>
+            <p>Konfigurasi Router Mikrotik untuk kebutuhan port forward server.</p>
+          </article>
+
+          <article class="project">
+            <div class="project-year">2021</div>
+            <h3>RSUD Pasarwajo Kabupaten Buton</h3>
+            <p>Instalasi server Proxmox untuk kebutuhan virtualisasi server.</p>
+          </article>
+
+          <article class="project">
+            <div class="project-year">2021</div>
+            <h3>Dinas Kominfo Kabupaten Buton</h3>
+            <p>
+              Pembuatan Portal Informasi COVID-19.
+              <br>
+              <a class="project-link" href="https://covid19.butonkab.go.id" target="_blank" rel="noopener">
+                covid19.butonkab.go.id ↗
+              </a>
+            </p>
+          </article>
+
+          <article class="project">
+            <div class="project-year">2021</div>
+            <h3>Kejaksaan Negeri Kabupaten Buton</h3>
+            <p>
+              Pembuatan website resmi.
+              <br>
+              <a class="project-link" href="https://kejari-buton.go.id" target="_blank" rel="noopener">
+                kejari-buton.go.id ↗
+              </a>
+            </p>
+          </article>
+
+          <article class="project">
+            <div class="project-year">2020</div>
+            <h3>Dinas PUPR Baubau</h3>
+            <p>
+              Pembuatan sistem informasi perizinan IMB.
+              <br>
+              <a class="project-link" href="https://imb.puprbaubau.com" target="_blank" rel="noopener">
+                imb.puprbaubau.com ↗
+              </a>
+            </p>
+          </article>
+
+          <article class="project">
+            <div class="project-year">2020</div>
+            <h3>Fuel Terminal Pertamina Kota Baubau</h3>
+            <p>
+              Pembuatan sistem informasi pengelolaan arsip (e-arsip).
+              <br>
+              <a class="project-link" href="https://smartpediapertaminabaubau.com" target="_blank" rel="noopener">
+                smartpediapertaminabaubau.com ↗
+              </a>
+            </p>
+          </article>
+
+          <article class="project">
+            <div class="project-year">2020</div>
+            <h3>RSUD Pasarwajo Kabupaten Buton</h3>
+            <p>Konfigurasi Router Mikrotik dan Access Point.</p>
+          </article>
+
+          <article class="project">
+            <div class="project-year">2019</div>
+            <h3>BLUD RSUD Kota Baubau</h3>
+            <p>Migrasi infrastruktur jaringan komputer dari kabel tembaga ke Fiber Optik.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- EDUCATION -->
+    <section id="education">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="section-label">04 · Education</div>
+            <h2>Education</h2>
+          </div>
+
+          <p class="section-intro">
+            Latar belakang pendidikan teknik komputer dan informatika.
+          </p>
+        </div>
+
+        <div class="education-grid">
+
+          <article class="education">
+            <div class="education-year">2013 — 2018</div>
+            <h3>Sarjana Teknik</h3>
+            <p>Universitas Dayanu Ikhsanuddin</p>
+            <p>Program Studi Teknik Informatika · IPK 3.54</p>
+          </article>
+
+          <article class="education">
+            <div class="education-year">2010 — 2013</div>
+            <h3>Sekolah Menengah Kejuruan</h3>
+            <p>SMK Negeri 2 Baubau</p>
+            <p>Jurusan Teknik Komputer &amp; Jaringan</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+      <div class="container">
+        <div class="contact">
+          <div class="section-label">05 · Contact</div>
+          <h2>Let's work together.</h2>
+          <p>
+            Untuk kebutuhan IT infrastructure, network support, server,
+            atau project teknologi informasi, silakan hubungi melalui kontak berikut.
+          </p>
+
+          <div class="contact-links">
+            <a class="btn btn-primary" href="mailto:ikhsannahdillah@gmail.com">
+              Email
+            </a>
+
+            <a class="btn" href="tel:+6282393131187">
+              0823-9313-1187
+            </a>
+
+            <a class="btn" href="https://ikhsannahdillah.my.id" target="_blank" rel="noopener">
+              Portfolio ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      © <span id="year"></span> Al Ikhsan Nahdillah Muis Malik. All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById("navLinks").classList.toggle("open");
+    }
+
+    document.querySelectorAll("#navLinks a").forEach(link => {
+      link.addEventListener("click", () => {
+        document.getElementById("navLinks").classList.remove("open");
+      });
+    });
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>
