@@ -13,13 +13,13 @@
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
-	<url>
+    <url>
         <loc>https://ikhsannahdillah.github.io/speaking.html</loc>
         <lastmod>2026-08-23</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
-	<url>
+    <url>
         <loc>https://ikhsannahdillah.github.io/articles.html</loc>
         <lastmod>2026-08-23</lastmod>
         <changefreq>monthly</changefreq>
@@ -31,7 +31,7 @@
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
-		<url>
+    <url>
         <loc>https://ikhsannahdillah.github.io/tools.html</loc>
         <lastmod>2026-08-23</lastmod>
         <changefreq>monthly</changefreq>
@@ -43,15 +43,14 @@
         <changefreq>yearly</changefreq>
         <priority>0.6</priority>
     </url>
-	
-	<!-- Daftar Tools -->
+    
+    <!-- Daftar Tools -->
     <url>
         <loc>https://ikhsannahdillah.github.io/splitter-calculator.html</loc>
         <lastmod>2026-08-20</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
-    <url>
 
     <!-- Daftar Artikel Dinamis -->
     <url>
