@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "title": "Kalkulator Splitter Rasio",
+    "url": "splitter-calculator.html",
+    "category": "FTTH / Fiber",
+    "description": "Hitung persentase rasio ODC (1:99 - 50:50) dan estimasi redaman output ODP secara akurat.",
+    "status": "active"
+  }
+]

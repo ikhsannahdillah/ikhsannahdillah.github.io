@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Meta Tag SEO Utama -->
+    <title>Kalkulator Splitter Rasio FTTH - Catatan Al Ikhsan Nahdillah Muis Malik</title>
+    <meta name="title" content="Kalkulator Splitter Rasio FTTH - Catatan Al Ikhsan Nahdillah Muis Malik">
+    <meta name="description" content="Aplikasi kalkulator rumus splitter ratio untuk menentukan persentase rasio ODC dan menghitung redaman ODP pada jaringan fiber optik (FTTH).">
+    <meta name="author" content="Al Ikhsan Nahdillah Muis Malik">
+
+    <!-- Open Graph (WhatsApp & Facebook Share) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Kalkulator Splitter Rasio FTTH - Catatan Al Ikhsan Nahdillah Muis Malik">
+    <meta property="og:description" content="Kalkulator rasio splitter ODC & ODP jaringan fiber optik (FTTH).">
+    <meta property="og:image" content="assets/img/og-image.jpg">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="assets/img/favicon.jpg">
+
+    <!-- Tailwind CSS & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'Fira Code', monospace; }
+        .transition-fade {
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        html.is-animating .transition-fade {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+    </style>
+
+    <!-- CDN Swup & Plugins Scripts -->
+    <script src="https://unpkg.com/swup@4"></script>
+    <script src="https://unpkg.com/@swup/scripts-plugin@2"></script>
+    <script src="https://unpkg.com/@swup/head-plugin@2"></script>
+</head>
+<body class="bg-white text-gray-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER KOSONG DENGAN ID -->
+    <header id="site-header" class="max-w-2xl w-full mx-auto px-6 pt-10 pb-8 flex justify-between items-center"></header>
+
+    <!-- KONTAINER UTAMA TOOLS (DI DALAM #SWUP) -->
+    <main id="swup" class="transition-fade max-w-2xl w-full mx-auto px-6 py-4 flex-grow">
+        <section class="space-y-6">
+            <!-- Judul Halaman -->
+            <div>
+                <span class="text-xs font-mono font-semibold text-blue-600 tracking-wider uppercase">Network Tools</span>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight mt-1">
+                    Kalkulator Splitter Rasio
+                </h1>
+                <p class="text-gray-600 text-sm sm:text-base leading-relaxed mt-2">
+                    Aplikasi kalkulator rumus <i>splitter ratio</i> untuk menentukan persentase rasio ODC dan menghitung estimasi redaman ODP pada jaringan fiber optik (FTTH).
+                </p>
+            </div>
+
+            <!-- Form Kalkulator -->
+            <div class="p-6 rounded-2xl border border-gray-200/80 bg-white shadow-sm space-y-5">
+                <h2 class="text-lg font-bold text-gray-900 border-b pb-3 border-gray-100">
+                    Aplikasi Kalkulator Rasio
+                </h2>
+
+                <form id="calculator-form" onsubmit="calculateRatio(event)" class="space-y-4">
+                    <!-- Input Laser Power -->
+                    <div>
+                        <label for="input-power" class="block text-sm font-semibold text-gray-700 mb-1">
+                            Input Laser Power <span class="text-xs text-gray-400 font-normal">(dBm)</span>
+                        </label>
+                        <input type="number" step="0.01" id="input-power" placeholder="8" required 
+                               class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-gray-900 font-mono text-sm">
+                        <p class="text-[11px] text-gray-400 italic mt-1">*Gunakan tanda titik (.) untuk angka koma/desimal</p>
+                    </div>
+
+                    <!-- Persen Rasio ODC -->
+                    <div>
+                        <label for="ratio-select" class="block text-sm font-semibold text-gray-700 mb-1">
+                            Persen Rasio ODC <span class="text-xs text-gray-400 font-normal">(Splitter Ratio)</span>
+                        </label>
+                        <select id="ratio-select" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-gray-900 font-mono text-sm bg-white">
+                            <option value="1:99">1:99 (1% / 99%)</option>
+                            <option value="2:98">2:98 (2% / 98%)</option>
+                            <option value="3:97">3:97 (3% / 97%)</option>
+                            <option value="4:96">4:96 (4% / 96%)</option>
+                            <option value="5:95">5:95 (5% / 95%)</option>
+                            <option value="6:94">6:94 (6% / 94%)</option>
+                            <option value="7:93">7:93 (7% / 93%)</option>
+                            <option value="8:92">8:92 (8% / 92%)</option>
+                            <option value="9:91">9:91 (9% / 91%)</option>
+                            <option value="10:90">10:90 (10% / 90%)</option>
+                            <option value="11:89">11:89 (11% / 89%)</option>
+                            <option value="12:88">12:88 (12% / 88%)</option>
+                            <option value="13:87">13:87 (13% / 87%)</option>
+                            <option value="14:86">14:86 (14% / 86%)</option>
+                            <option value="15:85">15:85 (15% / 85%)</option>
+                            <option value="16:84">16:84 (16% / 84%)</option>
+                            <option value="17:83">17:83 (17% / 83%)</option>
+                            <option value="18:82">18:82 (18% / 82%)</option>
+                            <option value="19:81">19:81 (19% / 81%)</option>
+                            <option value="20:80">20:80 (20% / 80%)</option>
+                            <option value="25:75">25:75 (25% / 75%)</option>
+                            <option value="30:70">30:70 (30% / 70%)</option>
+                            <option value="35:65">35:65 (35% / 65%)</option>
+                            <option value="40:60">40:60 (40% / 60%)</option>
+                            <option value="45:55">45:55 (45% / 55%)</option>
+                            <option value="50:50">50:50 (50% / 50%)</option>
+                        </select>
+                    </div>
+
+                    <!-- Varian ODP -->
+                    <div>
+                        <label for="odp-select" class="block text-sm font-semibold text-gray-700 mb-1">
+                            Varian ODP <span class="text-xs text-gray-400 font-normal">(Pasif Splitter)</span>
+                        </label>
+                        <select id="odp-select" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-gray-900 font-mono text-sm bg-white">
+                            <option value="1:2">1:2 (~3.5 dB loss)</option>
+                            <option value="1:4">1:4 (~7.2 dB loss)</option>
+                            <option value="1:8" selected>1:8 (~10.5 dB loss)</option>
+                            <option value="1:16">1:16 (~13.8 dB loss)</option>
+                            <option value="1:32">1:32 (~17.0 dB loss)</option>
+                        </select>
+                    </div>
+
+                    <!-- Tombol Hitung -->
+                    <button type="submit" class="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition duration-150 shadow-sm active:scale-[0.99]">
+                        HITUNG REDAMAN
+                    </button>
+                </form>
+            </div>
+
+            <!-- Box Hasil Perhitungan (Tampil Setelah Di-Submit) -->
+            <div id="result-box" class="hidden p-6 rounded-2xl border border-blue-100 bg-blue-50/50 space-y-4">
+                <h3 class="text-base font-bold text-gray-900 font-mono border-b border-blue-100 pb-2">
+                    Hasil Perhitungan Output
+                </h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Output ODC Kecil (Branch) -->
+                    <div class="p-4 rounded-xl bg-white border border-gray-200/60 shadow-sm">
+                        <span class="text-xs font-mono text-gray-500 block">Out ODC Persen Kecil (Branch)</span>
+                        <div class="text-xl font-extrabold text-blue-600 font-mono mt-1" id="out-odc-kecil">0 dBm</div>
+                        <p class="text-[11px] text-gray-400 mt-1" id="desc-kecil">Diteruskan ke ODP Lintas ini</p>
+                    </div>
+
+                    <!-- Output ODC Besar (Trunk/Next ODC) -->
+                    <div class="p-4 rounded-xl bg-white border border-gray-200/60 shadow-sm">
+                        <span class="text-xs font-mono text-gray-500 block">Out ODC Persen Besar (Trunk)</span>
+                        <div class="text-xl font-extrabold text-green-600 font-mono mt-1" id="out-odc-besar">0 dBm</div>
+                        <p class="text-[11px] text-gray-400 mt-1">Diteruskan ke ODC berikutnya</p>
+                    </div>
+                </div>
+
+                <!-- Output Redaman ODP Pasif -->
+                <div class="p-4 rounded-xl bg-white border border-gray-200/60 shadow-sm">
+                    <span class="text-xs font-mono text-gray-500 block">Output Redaman Port ODP (<span id="odp-type-label">1:8</span>)</span>
+                    <div class="text-2xl font-extrabold text-gray-900 font-mono mt-1" id="out-odp-result">0 dBm</div>
+                    <p class="text-[11px] text-gray-400 mt-1">Estimasi daya sinyal yang diterima di port pelanggan (ONT/Splicing)</p>
+                </div>
+            </div>
+
+            <!-- Catatan Kaki / Disclaimer -->
+            <div class="p-4 rounded-xl bg-gray-50 border border-gray-200/60 text-xs text-gray-600 leading-relaxed">
+                <span class="font-bold text-gray-800">Catatan Tambahan:</span> Hasil perhitungan di atas merupakan nilai rasio ideal teoretis. Dalam praktik lapangan, Anda perlu menambahkan faktor <i>total attenuation losses</i> (~0.2 - 0.5 dB per titik sambungan/splicing, konektor SC/UPC/APC, adapter/barel, fastconnector, serta bend radius/tekukan kabel).
+            </div>
+        </section>
+
+        <!-- LOGIKA PERHITUNGAN KALKULATOR -->
+        <script>
+            // Tabel Loss Redaman Rasio ODC Lengkap (dBm)
+            const ratioLossTable = {
+                "1:99":  { small: 20.0,  large: 0.05 },
+                "2:98":  { small: 17.0,  large: 0.09 },
+                "3:97":  { small: 15.2,  large: 0.13 },
+                "4:96":  { small: 14.0,  large: 0.18 },
+                "5:95":  { small: 13.0,  large: 0.22 },
+                "6:94":  { small: 12.2,  large: 0.27 },
+                "7:93":  { small: 11.5,  large: 0.31 },
+                "8:92":  { small: 11.0,  large: 0.36 },
+                "9:91":  { small: 10.5,  large: 0.41 },
+                "10:90": { small: 10.0,  large: 0.46 },
+                "11:89": { small: 9.6,   large: 0.51 },
+                "12:88": { small: 9.2,   large: 0.56 },
+                "13:87": { small: 8.8,   large: 0.61 },
+                "14:86": { small: 8.5,   large: 0.66 },
+                "15:85": { small: 8.2,   large: 0.71 },
+                "16:84": { small: 7.9,   large: 0.76 },
+                "17:83": { small: 7.7,   large: 0.81 },
+                "18:82": { small: 7.4,   large: 0.86 },
+                "19:81": { small: 7.2,   large: 0.91 },
+                "20:80": { small: 7.0,   large: 0.97 },
+                "25:75": { small: 6.0,   large: 1.25 },
+                "30:70": { small: 5.2,   large: 1.55 },
+                "35:65": { small: 4.6,   large: 1.87 },
+                "40:60": { small: 4.0,   large: 2.22 },
+                "45:55": { small: 3.5,   large: 2.60 },
+                "50:50": { small: 3.01,  large: 3.01 }
+            };
+
+            // Tabel Loss Pasif Splitter ODP (dBm)
+            const odpLossTable = {
+                "1:2": 3.5,
+                "1:4": 7.2,
+                "1:8": 10.5,
+                "1:16": 13.8,
+                "1:32": 17.0
+            };
+
+            function calculateRatio(event) {
+                event.preventDefault();
+
+                const inputPower = parseFloat(document.getElementById('input-power').value);
+                const ratioValue = document.getElementById('ratio-select').value;
+                const odpValue = document.getElementById('odp-select').value;
+
+                if (isNaN(inputPower)) return;
+
+                const ratioLoss = ratioLossTable[ratioValue];
+                const odpLoss = odpLossTable[odpValue];
+
+                // Perhitungan Out ODC
+                const outODCKecil = inputPower - ratioLoss.small;
+                const outODCBesar = inputPower - ratioLoss.large;
+
+                // Perhitungan Out ODP (dari Out ODC Kecil)
+                const outODP = outODCKecil - odpLoss;
+
+                // Tampilkan Hasil ke DOM
+                document.getElementById('out-odc-kecil').innerText = outODCKecil.toFixed(2) + ' dBm';
+                document.getElementById('out-odc-besar').innerText = outODCBesar.toFixed(2) + ' dBm';
+                document.getElementById('out-odp-result').innerText = outODP.toFixed(2) + ' dBm';
+                document.getElementById('odp-type-label').innerText = odpValue;
+
+                // Tampilkan Box Hasil
+                document.getElementById('result-box').classList.remove('hidden');
+            }
+        </script>
+    </main>
+
+    <!-- FOOTER KOSONG DENGAN ID -->
+    <footer id="site-footer" class="max-w-2xl w-full mx-auto px-6 pt-12 pb-10 mt-16 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500"></footer>
+
+    <!-- SKRIP INISIALISASI SWUP & COMPONENT LOADER -->
+    <script>
+        function loadComponents() {
+            const headerEl = document.getElementById('site-header');
+            if (headerEl && !headerEl.innerHTML.trim()) {
+                fetch('components/header.html')
+                    .then(res => res.text())
+                    .then(html => headerEl.innerHTML = html)
+                    .catch(err => console.error('Header Load Error:', err));
+            }
+
+            const footerEl = document.getElementById('site-footer');
+            if (footerEl && !footerEl.innerHTML.trim()) {
+                fetch('components/footer.html')
+                    .then(res => res.text())
+                    .then(html => footerEl.innerHTML = html)
+                    .catch(err => console.error('Footer Load Error:', err));
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadComponents);
+
+        if (typeof window.swupInstance === 'undefined') {
+            window.swupInstance = new Swup({
+                plugins: [
+                    new SwupScriptsPlugin(),
+                    new SwupHeadPlugin({
+                        awaitAssets: true,
+                        persistAssets: true
+                    })
+                ],
+                resolveUrl: (url) => url
+            });
+
+            window.swupInstance.hooks.on('page:view', loadComponents);
+        }
+    </script>
+</body>
+</html>

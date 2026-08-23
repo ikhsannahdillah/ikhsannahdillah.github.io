@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Meta Tag SEO Utama -->
+    <title>Network Tools & Utilities - Catatan Al Ikhsan Nahdillah Muis Malik</title>
+    <meta name="title" content="Network Tools & Utilities - Catatan Al Ikhsan Nahdillah Muis Malik">
+    <meta name="description" content="Kumpulan tools dan utilitas Al Ikhsan Nahdillah Muis Malik.">
+    <meta name="author" content="Al Ikhsan Nahdillah Muis Malik">
+
+    <!-- Open Graph (WhatsApp & Facebook Share) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Network Tools & Utilities - Catatan Al Ikhsan Nahdillah Muis Malik">
+    <meta property="og:description" content="Kumpulan tools dan utilitas Al Ikhsan Nahdillah Muis Malik.">
+    <meta property="og:image" content="assets/img/og-image.jpg">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="assets/img/favicon.jpg">
+
+    <!-- Tailwind CSS & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'Fira Code', monospace; }
+        .transition-fade {
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        html.is-animating .transition-fade {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+    </style>
+
+    <!-- CDN Swup & Plugins Scripts -->
+    <script src="https://unpkg.com/swup@4"></script>
+    <script src="https://unpkg.com/@swup/scripts-plugin@2"></script>
+    <script src="https://unpkg.com/@swup/head-plugin@2"></script>
+</head>
+<body class="bg-white text-gray-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER KOSONG DENGAN ID -->
+    <header id="site-header" class="max-w-2xl w-full mx-auto px-6 pt-10 pb-8 flex justify-between items-center"></header>
+
+    <!-- KONTAINER UTAMA TOOLS (DI DALAM #SWUP) -->
+    <main id="swup" class="transition-fade max-w-2xl w-full mx-auto px-6 py-4 flex-grow">
+        <section class="space-y-6">
+            <!-- Judul Halaman -->
+            <div>
+                <span class="text-xs font-mono font-semibold text-blue-600 tracking-wider uppercase">Directory</span>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight mt-1">
+                    Network Tools
+                </h1>
+                <p class="text-gray-600 text-sm sm:text-base leading-relaxed mt-2">
+                    Kumpulan tools dan utilitas Al Ikhsan Nahdillah Muis Malik
+                </p>
+            </div>
+
+            <!-- Tempat Render Card Tools dari JSON -->
+            <div id="tools-container" class="grid grid-cols-1 gap-4 pt-2">
+                <!-- Data dimasukkan secara dinamis -->
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER KOSONG DENGAN ID -->
+    <footer id="site-footer" class="max-w-2xl w-full mx-auto px-6 pt-12 pb-10 mt-16 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500"></footer>
+
+    <!-- SKRIP INISIALISASI SWUP & COMPONENT LOADER -->
+    <script>
+        function renderTools() {
+            const container = document.getElementById('tools-container');
+            if (!container) return;
+
+            // Kosongkan kontainer sebelum melakukan render baru
+            container.innerHTML = '';
+
+            fetch('assets/js/tools.json')
+                .then(res => res.json())
+                .then(tools => {
+                    const htmlContent = tools.map(tool => {
+                        if (tool.status === 'upcoming') {
+                            return `
+                                <div class="p-5 rounded-2xl border border-dashed border-gray-200 bg-gray-50/50 flex items-center justify-between">
+                                    <div>
+                                        <span class="px-2 py-0.5 text-[10px] font-mono font-semibold uppercase bg-gray-200/60 text-gray-500 rounded-md">
+                                            Upcoming
+                                        </span>
+                                        <h2 class="text-base font-semibold text-gray-400 mt-1">${tool.title}</h2>
+                                        <p class="text-xs text-gray-400 mt-0.5">${tool.description}</p>
+                                    </div>
+                                </div>
+                            `;
+                        }
+
+                        return `
+                            <a href="${tool.url}" class="group block p-5 rounded-2xl border border-gray-200/80 bg-white hover:border-blue-500 hover:shadow-md transition duration-200">
+                                <div class="flex items-start justify-between gap-4">
+                                    <div class="space-y-1.5">
+                                        <div class="flex items-center gap-2">
+                                            <span class="px-2 py-0.5 text-[10px] font-mono font-semibold uppercase bg-blue-50 text-blue-600 rounded-md border border-blue-100">
+                                                ${tool.category}
+                                            </span>
+                                        </div>
+                                        <h2 class="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition flex items-center gap-1.5">
+                                            ${tool.title}
+                                            <svg class="w-4 h-4 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition duration-200 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                            </svg>
+                                        </h2>
+                                        <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">${tool.description}</p>
+                                    </div>
+                                </div>
+                            </a>
+                        `;
+                    }).join('');
+
+                    container.innerHTML = htmlContent;
+                })
+                .catch(err => {
+                    console.error('Error loading tools:', err);
+                    container.innerHTML = '<p class="text-sm text-red-500">Gagal memuat daftar tools.</p>';
+                });
+        }
+
+        function loadComponents() {
+            const headerEl = document.getElementById('site-header');
+            if (headerEl && !headerEl.innerHTML.trim()) {
+                fetch('components/header.html')
+                    .then(res => res.text())
+                    .then(html => headerEl.innerHTML = html)
+                    .catch(err => console.error('Header Load Error:', err));
+            }
+
+            const footerEl = document.getElementById('site-footer');
+            if (footerEl && !footerEl.innerHTML.trim()) {
+                fetch('components/footer.html')
+                    .then(res => res.text())
+                    .then(html => footerEl.innerHTML = html)
+                    .catch(err => console.error('Footer Load Error:', err));
+            }
+
+            renderTools();
+        }
+
+        // Jalankan saat load awal
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadComponents);
+        } else {
+            loadComponents();
+        }
+
+        // Inisialisasi Swup tunggal
+        if (typeof window.swupInstance === 'undefined') {
+            window.swupInstance = new Swup({
+                plugins: [
+                    new SwupScriptsPlugin(),
+                    new SwupHeadPlugin({
+                        awaitAssets: true,
+                        persistAssets: true
+                    })
+                ],
+                resolveUrl: (url) => url
+            });
+
+            window.swupInstance.hooks.on('page:view', () => {
+                loadComponents();
+            });
+        }
+    </script>
+</body>
+</html>

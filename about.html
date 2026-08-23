@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Meta Tag SEO Utama -->
+    <title>About - Catatan Al Ikhsan Nahdillah Muis Malik</title>
+    <meta name="title" content="About - Catatan Al Ikhsan Nahdillah Muis Malik">
+    <meta name="description" content="Profil, latar belakang, dan pengalaman kerja Al Ikhsan Nahdillah Muis Malik sebagai IT Engineer.">
+    <meta name="author" content="Al Ikhsan Nahdillah Muis Malik">
+
+    <!-- Open Graph / WhatsApp & Facebook Share -->
+    <meta property="og:type" content="profile">
+    <meta property="og:title" content="About - Catatan Al Ikhsan Nahdillah Muis Malik">
+    <meta property="og:description" content="IT Engineer dengan 12 tahun pengalaman di bidang infrastruktur jaringan, server, dan pengembangan web.">
+    <meta property="og:image" content="assets/img/og-image.jpg"> <!-- Ganti dengan path gambar preview Anda -->
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="assets/img/favicon.jpg">
+
+    <!-- Tailwind CSS & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'Fira Code', monospace; }
+        .transition-fade {
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        html.is-animating .transition-fade {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+    </style>
+
+    <!-- CDN Swup & Plugins Scripts -->
+    <script src="https://unpkg.com/swup@4"></script>
+    <script src="https://unpkg.com/@swup/scripts-plugin@2"></script>
+    <script src="https://unpkg.com/@swup/head-plugin@2"></script>
+
+    <!-- Schema.org JSON-LD untuk SEO Profil -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Al Ikhsan Nahdillah Muis Malik",
+      "jobTitle": "IT Engineer",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "PT Enigma Cipta Humanika"
+      },
+      "alumniOf": "Teknik Informatika",
+      "knowsAbout": ["Computer Networks", "Server Configuration", "Web Development", "Linux"]
+    }
+    </script>
+</head>
+<body class="bg-white text-gray-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER KOSONG DENGAN ID -->
+    <header id="site-header" class="max-w-2xl w-full mx-auto px-6 pt-10 pb-8 flex justify-between items-center"></header>
+
+    <!-- KONTAINER UTAMA About (DI DALAM #SWUP) -->
+    <main id="swup" class="transition-fade max-w-2xl w-full mx-auto px-6 py-4 flex-grow">
+        <section class="space-y-8">
+            
+            <!-- Header Profil Ringkas (Opsional: Foto & Title) -->
+            <div class="flex flex-col-reverse sm:flex-row items-start sm:items-center justify-between gap-6">
+                <div>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
+                        About
+                    </h1>
+                    <p class="text-sm font-medium text-gray-500 mt-1">
+                        IT Engineer & Tech Enthusiast
+                    </p>
+                </div>
+                <!-- Foto Profil (Opsional) -->
+                <img src="assets/img/avatar.jpg" alt="Al Ikhsan Nahdillah Muis Malik" 
+                     class="w-20 h-20 rounded-full object-cover border border-gray-200 shadow-sm bg-gray-50 flex-shrink-0"
+                     onerror="this.style.display='none'"> 
+            </div>
+
+            <!-- Paragraf Teks Deskripsi -->
+            <div class="space-y-4 text-gray-700 leading-relaxed text-base">
+                <p>
+                    <strong>Al Ikhsan Nahdillah Muis Malik</strong> adalah seorang Sarjana Teknik Informatika dengan pengalaman kerja lebih dari 12 tahun di bidang Teknologi Informasi. Saat ini ia memegang peranan sebagai <em>IT Engineer</em> di PT Enigma Cipta Humanika.
+                </p>
+
+                <p>
+                    Sepanjang karirnya, ia telah berhasil menangani berbagai proyek strategi terkait infrastruktur jaringan komputer, konfigurasi server, serta pengembangan aplikasi berbasis web untuk instansi pemerintahan, sektor pendidikan, hingga perusahaan swasta.
+                </p>
+
+                <p>
+                    Selain beraktivitas secara profesional, Al Ikhsan juga aktif dalam membina dan berpartisipasi di komunitas IT lokal, di antaranya <strong>Kelompok Pengguna Linux Indonesia (KPLI) Buton Raya</strong> dan <strong>Komunitas Programmer Buton</strong>. Ia juga rutin dipercaya menjadi pembicara dalam berbagai acara seminar, workshop, dan <em>sharing session</em> teknologi.
+                </p>
+            </div>
+
+            <!-- Bagian Tambahan: Area Keahlian / Tech Stack -->
+            <div class="pt-4 border-t border-gray-100">
+                <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
+                    Fokus & Keahlian Utama
+                </h2>
+                <div class="flex flex-wrap gap-2 text-xs font-mono">
+                    <span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-md">Network Infrastructure</span>
+                    <span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-md">Server Administrator</span>
+                    <span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-md">Linux Administration</span>
+                    <span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-md">Web Development</span>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- FOOTER KOSONG DENGAN ID -->
+    <footer id="site-footer" class="max-w-2xl w-full mx-auto px-6 pt-12 pb-10 mt-16 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500"></footer>
+
+    <!-- SKRIP INISIALISASI SWUP & COMPONENT LOADER -->
+    <script>
+        function loadComponents() {
+            const headerEl = document.getElementById('site-header');
+            if (headerEl && !headerEl.innerHTML.trim()) {
+                fetch('components/header.html')
+                    .then(res => res.text())
+                    .then(html => headerEl.innerHTML = html)
+                    .catch(err => console.error('Header load error:', err));
+            }
+
+            const footerEl = document.getElementById('site-footer');
+            if (footerEl && !footerEl.innerHTML.trim()) {
+                fetch('components/footer.html')
+                    .then(res => res.text())
+                    .then(html => footerEl.innerHTML = html)
+                    .catch(err => console.error('Footer load error:', err));
+            }
+        }
+
+        // Jalankan saat dokumen awal siap
+        document.addEventListener('DOMContentLoaded', loadComponents);
+
+        // Inisialisasi Swup
+        if (typeof window.swupInstance === 'undefined') {
+            window.swupInstance = new Swup({
+                plugins: [
+                    new SwupScriptsPlugin(),
+                    new SwupHeadPlugin({
+                        awaitAssets: true,
+                        persistAssets: true
+                    })
+                ],
+                resolveUrl: (url) => url
+            });
+
+            window.swupInstance.hooks.on('page:view', loadComponents);
+        }
+    </script>
+</body>
+</html>

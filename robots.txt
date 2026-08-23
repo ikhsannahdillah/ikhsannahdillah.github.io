@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Lokasi Sitemap
+Sitemap: https://domainanda.com/sitemap.xml

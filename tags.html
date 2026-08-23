@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Meta Tag SEO Utama (Cukup Title, Description, & Author) -->
+    <title>Topik Tulisan - Catatan Al Ikhsan Nahdillah Muis Malik</title>
+    <meta name="description" content="Kumpulan tulisan dan artikel berdasarkan topik pilihan di Catatan Al Ikhsan Nahdillah Muis Malik.">
+    <meta name="author" content="Al Ikhsan Nahdillah Muis Malik">
+    
+    <!-- Mencegah duplicate content & menghemat crawl budget di Google -->
+    <meta name="robots" content="noindex, follow">
+
+    <!-- CSS & Typography -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .transition-fade {
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        html.is-animating .transition-fade {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+    </style>
+
+    <!-- CDN Swup & Plugins Scripts -->
+    <script src="https://unpkg.com/swup@4"></script>
+    <script src="https://unpkg.com/@swup/scripts-plugin@2"></script>
+    <script src="https://unpkg.com/@swup/head-plugin@2"></script>
+    
+    <link rel="icon" type="image/jpg" href="assets/img/favicon.jpg">
+</head>
+<body class="bg-white text-gray-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER KOSONG DENGAN ID -->
+    <header id="site-header" class="max-w-2xl w-full mx-auto px-6 pt-10 pb-8 flex justify-between items-center"></header>
+
+    <!-- KONTAINER UTAMA TAGS (DI DALAM #SWUP) -->
+    <main id="swup" class="transition-fade max-w-2xl w-full mx-auto px-6 py-4 flex-grow">
+        <section>
+            <!-- Judul Halaman -->
+            <h1 id="judul-tag" class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight leading-tight mb-8">
+                Hasil untuk tulisan yang ditandai : <span id="nama-tag" class="underline underline-offset-4 decoration-blue-500">...</span>
+            </h1>
+
+            <!-- Daftar Artikel -->
+            <div id="daftar-tags" class="divide-y divide-gray-100 border-t border-b border-gray-100">
+                <p class="py-6 text-sm text-gray-400">Memuat tulisan...</p>
+            </div>
+        </section>
+
+        <!-- SKRIP LOGIKA TAMPILAN TAGS & SEO DINAMIS -->
+        <script>
+            // Helper pemformatan tanggal ke Bahasa Indonesia untuk UI
+            function formatTanggalIndo(dateStr) {
+                if (!dateStr) return '';
+                const date = new Date(dateStr);
+                if (isNaN(date.getTime())) return dateStr;
+                return date.toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+            }
+
+            function updateTagsPage() {
+                const container = document.getElementById('daftar-tags');
+                const tagEl = document.getElementById('nama-tag');
+
+                if (!container) return;
+
+                // 1. Ambil parameter 'tag' dari URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const selectedTag = urlParams.get('tag');
+
+                if (!selectedTag) {
+                    if (tagEl) tagEl.innerText = '-';
+                    container.innerHTML = '<p class="py-6 text-sm text-gray-500">Tidak ada topik/tag yang dipilih.</p>';
+                    return;
+                }
+
+                // 2. Tampilkan nama tag pada elemen HTML
+                if (tagEl) tagEl.innerText = selectedTag;
+
+                // 3. Update Meta Tag SEO Dinamis
+                const applySEO = () => {
+                    const titleText = `Tulisan Topik: ${selectedTag} - Catatan Al Ikhsan Nahdillah Muis Malik`;
+                    const descText = `Kumpulan artikel, tutorial, dan catatan mengenai ${selectedTag} oleh Al Ikhsan Nahdillah Muis Malik.`;
+
+                    document.title = titleText;
+
+                    const setMetaContent = (selector, attribute, attrValue, content) => {
+                        let el = document.querySelector(selector);
+                        if (!el) {
+                            el = document.createElement('meta');
+                            el.setAttribute(attribute, attrValue);
+                            document.head.appendChild(el);
+                        }
+                        el.setAttribute('content', content);
+                    };
+
+                    setMetaContent('meta[name="description"]', 'name', 'description', descText);
+                };
+
+                applySEO();
+                requestAnimationFrame(applySEO);
+
+                // 4. Ambil Data Artikel dari JSON
+                fetch('assets/js/articles.json')
+                    .then(res => {
+                        if (!res.ok) throw new Error('File JSON tidak ditemukan');
+                        return res.json();
+                    })
+                    .then(data => {
+                        const targetTagLower = selectedTag.toLowerCase();
+
+                        // Filter berdasarkan array tags atau properti kategori
+                        const filtered = data.filter(item => {
+                            if (item.tags && Array.isArray(item.tags)) {
+                                return item.tags.some(t => t.toLowerCase() === targetTagLower);
+                            }
+                            const singleCat = item.kategori || item.category;
+                            return singleCat && singleCat.toLowerCase() === targetTagLower;
+                        });
+
+                        // Sort berdasarkan tanggal terbaru
+                        filtered.sort((a, b) => {
+                            const dateA = new Date(a.date || a.tanggal);
+                            const dateB = new Date(b.date || b.tanggal);
+                            return dateB - dateA;
+                        });
+
+                        if (filtered.length === 0) {
+                            container.innerHTML = '<p class="py-6 text-sm text-gray-500">Belum ada artikel untuk topik ini.</p>';
+                            return;
+                        }
+
+                        container.innerHTML = filtered.map(item => {
+                            const title = item.title || item.judul;
+                            const slug = item.slug;
+                            const rawDate = item.date || item.tanggal || '';
+                            const coverImg = item.cover || item.ikon || 'assets/img/og-image.jpg';
+
+                            return `
+                                <a href="article.html?slug=${slug}" class="group relative flex items-center gap-4 py-4 px-3 rounded-xl transition-all duration-300 ease-out hover:bg-gray-50 hover:shadow-sm hover:-translate-y-0.5">
+                                    <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center overflow-hidden rounded-lg bg-gray-100 border border-gray-200/80 shadow-xs relative">
+                                        <img src="${coverImg}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500 ease-out">
+                                        <div class="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/10 transition duration-300"></div>
+                                    </div>
+                                    <div class="flex-grow min-w-0">
+                                        <h2 class="text-base sm:text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-200 leading-snug flex items-center justify-between">
+                                            <span class="truncate">${title}</span>
+                                            <svg class="w-4 h-4 ml-2 text-blue-600 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                            </svg>
+                                        </h2>
+                                        <p class="text-xs text-gray-400 font-normal mt-1">
+                                            ${formatTanggalIndo(rawDate)}
+                                        </p>
+                                    </div>
+                                </a>
+                            `;
+                        }).join('');
+                    })
+                    .catch(err => {
+                        console.error('Error:', err);
+                        container.innerHTML = '<p class="py-6 text-sm text-red-500">Gagal memuat daftar tulisan.</p>';
+                    });
+            }
+
+            // Eksekusi saat pertama kali dimuat
+            updateTagsPage();
+
+            // Jalankan ulang setiap kali Swup mengganti halaman
+            if (window.swupInstance) {
+                window.swupInstance.hooks.on('page:view', updateTagsPage);
+                window.swupInstance.hooks.on('content:replace', updateTagsPage);
+            }
+        </script>
+    </main>
+
+    <!-- FOOTER KOSONG DENGAN ID -->
+    <footer id="site-footer" class="max-w-2xl w-full mx-auto px-6 pt-12 pb-10 mt-16 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500"></footer>
+
+    <!-- SKRIP INISIALISASI SWUP & COMPONENT LOADER -->
+    <script>
+        if (typeof window.swupInstance === 'undefined') {
+            window.swupInstance = new Swup({
+                plugins: [
+                    new SwupScriptsPlugin(),
+                    new SwupHeadPlugin({
+                        awaitAssets: true,
+                        persistAssets: true
+                    })
+                ],
+                resolveUrl: (url) => url
+            });
+        }
+
+        function loadComponents() {
+            const headerEl = document.getElementById('site-header');
+            if (headerEl && !headerEl.innerHTML.trim()) {
+                fetch('components/header.html')
+                    .then(res => res.text())
+                    .then(html => headerEl.innerHTML = html)
+                    .catch(err => console.error(err));
+            }
+
+            const footerEl = document.getElementById('site-footer');
+            if (footerEl && !footerEl.innerHTML.trim()) {
+                fetch('components/footer.html')
+                    .then(res => res.text())
+                    .then(html => footerEl.innerHTML = html)
+                    .catch(err => console.error(err));
+            }
+        }
+
+        loadComponents();
+
+        if (window.swupInstance) {
+            window.swupInstance.hooks.on('page:view', loadComponents);
+        }
+    </script>
+</body>
+</html>

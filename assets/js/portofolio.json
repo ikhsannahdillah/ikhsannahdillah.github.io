@@ -1,0 +1,122 @@
+[
+  {
+    "nama": "SMAN 1 Lapandewa, Kab. Buton Selatan",
+    "tahun": "2026",
+    "layanan": "Instalasi Infrastruktur Jaringan Komputer, Konfigurasi Router dan Access Point",
+    "logo": "assets/img/portofolio/sman1lapandewa.jpg"
+  },
+  {
+    "nama": "PT Meutia Segar, Kota Baubau",
+    "tahun": "2026",
+    "layanan": "Konfigurasi SD-WAN Kebutuhan Interkoneksi Kantor Pusat dan Cabang",
+    "logo": "assets/img/portofolio/ptms.png"
+  },
+  {
+    "nama": "Kantor Walikota Baubau",
+    "tahun": "2025",
+    "layanan": "Konfigurasi Router dan Access Point",
+    "logo": "assets/img/portofolio/pemkotbaubau.png"
+  },
+  {
+    "nama": "PLTMG Baubau",
+    "tahun": "2025",
+    "layanan": "Konfigurasi Router dan Access Point",
+    "logo": "assets/img/portofolio/pln.png"
+  },
+  {
+    "nama": "IKT Buton Raya, Kota Baubau",
+    "tahun": "2025",
+    "layanan": "Konfigurasi Router",
+    "logo": "assets/img/portofolio/ikt.jpg"
+  },
+  {
+    "nama": "RSUD dr. H. L. M. Baharuddin, M.Kes, Kabupaten Muna",
+    "tahun": "2024",
+    "layanan": "Instalasi dan Konfigurasi Server, Router dan Access Point",
+    "logo": "assets/img/portofolio/muna.png"
+  },
+  {
+    "nama": "Klinik Faga Husada, Kota Baubau",
+    "tahun": "2024",
+    "layanan": "Instalasi dan Konfigurasi Server, Router dan Access Point",
+    "logo": "assets/img/portofolio/fagahusada.png"
+  },
+  {
+    "nama": "Klinik Farus Medika, Kota Baubau",
+    "tahun": "2024",
+    "layanan": "Instalasi dan Konfigurasi Server, Router dan Access Point",
+    "logo": "assets/img/portofolio/kfm.jpg"
+  },
+  {
+    "nama": "Kadena Glamping Dive Resort, Kab. Buton Tengah",
+    "tahun": "2023",
+    "layanan": "Instalasi Jaringan Komputer",
+    "logo": "assets/img/portofolio/kadena.png"
+  },
+  {
+    "nama": "PT Bussan Auto Finance, Kota Baubau",
+    "tahun": "2023",
+    "layanan": "Konfigurasi Perangkat PABX",
+    "logo": "assets/img/portofolio/baf.png"
+  },
+  {
+    "nama": "BPKAD Kota Baubau",
+    "tahun": "2022",
+    "layanan": "Pembuatan Sistem Informasi Aset Tanah dan Bangunan Pemerintah Kota Baubau",
+    "logo": "assets/img/portofolio/pemkotbaubau.png"
+  },
+  {
+    "nama": "UPP Kelas II Wanci, Kab. Wakatobi",
+    "tahun": "2022",
+    "layanan": "Pembuatan Wesite Resmi dan Sistem Informasi Pelaporan Kegiatan Usaha Laut",
+    "logo": "assets/img/portofolio/kuppwanci.jpg"
+  },
+  {
+    "nama": "Universitas Dayanu Ikhsanuddin, Kota Baubau",
+    "tahun": "2022",
+    "layanan": "Konfigurasi Router dan Access Point",
+    "logo": "assets/img/portofolio/unidayan.jpg"
+  },
+  {
+    "nama": "RSUD Pasarwajo, Kab. Buton",
+    "tahun": "2021",
+    "layanan": "Instalasi dan Konfigurasi Virtualisasi Server",
+    "logo": "assets/img/portofolio/buton.png"
+  },
+  {
+    "nama": "Dinas KOMINFO Kab. Buton",
+    "tahun": "2021",
+    "layanan": "Pembuatan portal informasi COVID-19",
+    "logo": "assets/img/portofolio/buton.png"
+  },
+  {
+    "nama": "Kejaksaan Negeri Kab. Buton",
+    "tahun": "2021",
+    "layanan": "Pembuatan Website Resmi",
+    "logo": "assets/img/portofolio/kejaksaan.png"
+  },
+  {
+    "nama": "Dinas PUPR Kota Baubau",
+    "tahun": "2020",
+    "layanan": "Pembuatan Sistem Informasi Perizinan IMB",
+    "logo": "assets/img/portofolio/pemkotbaubau.png"
+  },
+  {
+    "nama": "Fuel Terminal Pertamina Kota Baubau",
+    "tahun": "2020",
+    "layanan": "Pembuatan Sistem Informasi Pengelolaan Arsip Project (e-Arsip)",
+    "logo": "assets/img/portofolio/pertamina.png"
+  },
+  {
+    "nama": "RSUD Pasarwajo, Kab. Buton",
+    "tahun": "2020",
+    "layanan": "Konfigurasi Router dan Access Point",
+    "logo": "assets/img/portofolio/buton.png"
+  },
+  {
+    "nama": "BLUD RSUD Kota Baubau",
+    "tahun": "2019",
+    "layanan": "Instalasi Jaringan Komputer dan Konfigurasi Server, Router dan Access Point",
+    "logo": "assets/img/portofolio/rsudbaubau.jpg"
+  }
+]
