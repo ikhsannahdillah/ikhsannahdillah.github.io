@@ -32,5 +32,18 @@
 	  ],
 	  "cover": "/assets/img/artikel/kpb-header.png",
 	  "excerpt": "Acara ini makin seru karena menghadirkan sederet pembicara keren dan disambut antusias oleh sekitar 50-an peserta, mulai dari teman-teman mahasiswa hingga para praktisi IT se-Kota Baubau."
+	},
+	{
+	  "title": "Pelatihan Desain Grafis Kelurahan Tomba",
+	  "slug": "/articles/pelatihan-desain-grafis-kelurahan-tomba.html",
+	  "url": "/articles/pelatihan-desain-grafis-kelurahan-tomba.html",
+	  "date": "2024-11-30",
+	  "tags": [
+	    "Pelatihan",
+	    "Desain Grafis",
+	    "Kelurahan Tomba"
+	  ],
+	  "cover": "/assets/img/artikel/tomba-header.jpg",
+	  "excerpt": "Pelatihan Desain Grafis yang diadakan oleh Kantor Kelurahan Tomba, Kota Baubau. Pelatihan ini diikuti sekitar 20 peserta dari masyarakat setempat dengan latar belakang yang beragam"
 	}
 ]
