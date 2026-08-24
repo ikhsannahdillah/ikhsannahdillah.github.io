@@ -14,10 +14,10 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Contact - Catatan Al Ikhsan Nahdillah Muis Malik">
     <meta property="og:description" content="Informasi kontak dan PGP Public Key untuk menghubungi Al Ikhsan Nahdillah Muis Malik.">
-    <meta property="og:image" content="assets/img/og-image.jpg">
+    <meta property="og:image" content="https://ikhsannahdillah.github.io/assets/img/og-image.jpg">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/jpeg" href="assets/img/favicon.jpg">
+    <link rel="icon" type="image/jpeg" href="https://ikhsannahdillah.github.io/assets/img/favicon.jpg">
 
     <!-- Tailwind CSS & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -120,7 +120,7 @@
         function loadComponents() {
             const headerEl = document.getElementById('site-header');
             if (headerEl && !headerEl.innerHTML.trim()) {
-                fetch('components/header.html')
+                fetch('https://ikhsannahdillah.github.io/components/header.html')
                     .then(res => res.text())
                     .then(html => headerEl.innerHTML = html)
                     .catch(err => console.error('Header Load Error:', err));
@@ -128,7 +128,7 @@
 
             const footerEl = document.getElementById('site-footer');
             if (footerEl && !footerEl.innerHTML.trim()) {
-                fetch('components/footer.html')
+                fetch('https://ikhsannahdillah.github.io/components/footer.html')
                     .then(res => res.text())
                     .then(html => footerEl.innerHTML = html)
                     .catch(err => console.error('Footer Load Error:', err));

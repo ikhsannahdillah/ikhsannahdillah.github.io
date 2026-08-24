@@ -15,10 +15,10 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Portofolio & Klien - Catatan Al Ikhsan Nahdillah Muis Malik">
     <meta property="og:description" content="Daftar project, jaringan sekolah, perusahaan, dan klien yang pernah bekerja sama dengan Al Ikhsan Nahdillah Muis Malik.">
-    <meta property="og:image" content="assets/img/og-image.jpg">
+    <meta property="og:image" content="https://ikhsannahdillah.github.io/assets/img/og-image.jpg">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/jpeg" href="assets/img/favicon.jpg">
+    <link rel="icon" type="image/jpeg" href="https://ikhsannahdillah.github.io/assets/img/favicon.jpg">
 
     <!-- Tailwind CSS & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -70,11 +70,11 @@
 
         <!-- SKRIP LOGIKA PEMUATAN DATA PORTOFOLIO -->
         <script>
-            (function initPortofolio() {
+            function renderPortofolio() {
                 const gridContainer = document.getElementById('grid-portofolio');
                 if (!gridContainer) return;
 
-                fetch('assets/js/portofolio.json')
+                fetch('https://ikhsannahdillah.github.io/assets/js/portofolio.json')
                     .then(res => {
                         if (!res.ok) throw new Error('Gagal memuat JSON Portofolio');
                         return res.json();
@@ -124,7 +124,9 @@
                         console.error('Portofolio Fetch Error:', err);
                         gridContainer.innerHTML = '<p class="py-6 text-sm text-red-500 font-mono">Gagal memuat portofolio. Pastikan file assets/js/portofolio.json tersedia.</p>';
                     });
-            })();
+            }
+
+            renderPortofolio();
         </script>
     </main>
 
@@ -136,7 +138,7 @@
         function loadComponents() {
             const headerEl = document.getElementById('site-header');
             if (headerEl && !headerEl.innerHTML.trim()) {
-                fetch('components/header.html')
+                fetch('https://ikhsannahdillah.github.io/components/header.html')
                     .then(res => res.text())
                     .then(html => headerEl.innerHTML = html)
                     .catch(err => console.error('Header Load Error:', err));
@@ -144,7 +146,7 @@
 
             const footerEl = document.getElementById('site-footer');
             if (footerEl && !footerEl.innerHTML.trim()) {
-                fetch('components/footer.html')
+                fetch('https://ikhsannahdillah.github.io/components/footer.html')
                     .then(res => res.text())
                     .then(html => footerEl.innerHTML = html)
                     .catch(err => console.error('Footer Load Error:', err));
@@ -165,7 +167,12 @@
                 resolveUrl: (url) => url
             });
 
-            window.swupInstance.hooks.on('page:view', loadComponents);
+            window.swupInstance.hooks.on('page:view', () => {
+                loadComponents();
+                if (typeof renderPortofolio === 'function') {
+                    renderPortofolio();
+                }
+            });
         }
     </script>
 </body>

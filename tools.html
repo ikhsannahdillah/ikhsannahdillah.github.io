@@ -14,10 +14,10 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Network Tools & Utilities - Catatan Al Ikhsan Nahdillah Muis Malik">
     <meta property="og:description" content="Kumpulan tools dan utilitas Al Ikhsan Nahdillah Muis Malik.">
-    <meta property="og:image" content="assets/img/og-image.jpg">
+    <meta property="og:image" content="https://ikhsannahdillah.github.io/assets/img/og-image.jpg">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/jpeg" href="assets/img/favicon.jpg">
+    <link rel="icon" type="image/jpeg" href="https://ikhsannahdillah.github.io/assets/img/favicon.jpg">
 
     <!-- Tailwind CSS & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -67,13 +67,13 @@
             </div>
         </section>
 
-        <!-- LOGIKA JS DI DALAM #SWUP SEHINGGA DIEKSEKUSI OTOMATIS OLEH SWUP -->
+        <!-- LOGIKA JS DI DALAM #SWUP -->
         <script>
             function renderTools() {
                 const container = document.getElementById('tools-container');
                 if (!container) return;
 
-                const jsonPath = 'assets/js/tools.json?t=' + Date.now();
+                const jsonPath = 'https://ikhsannahdillah.github.io/assets/js/tools.json?t=' + Date.now();
 
                 fetch(jsonPath)
                     .then(res => {
@@ -82,7 +82,7 @@
                     })
                     .then(tools => {
                         if (!Array.isArray(tools) || tools.length === 0) {
-                            container.innerHTML = '<p class="text-xs text-gray-400">Belum ada tools yang tersedia.</p>';
+                            container.innerHTML = '<p class="text-xs text-gray-400 font-mono">Belum ada tools yang tersedia.</p>';
                             return;
                         }
 
@@ -105,17 +105,14 @@
                             let rawUrl = tool.url || tool.slug || tool.path || '#';
                             
                             if (rawUrl !== '#') {
-                                // Hapus slash diawal jika ada
                                 if (rawUrl.startsWith('/')) {
                                     rawUrl = rawUrl.substring(1);
                                 }
                                 
-                                // Jika tidak mengandung folder 'tools/', tambahkan 'tools/'
                                 if (!rawUrl.startsWith('tools/')) {
                                     rawUrl = 'tools/' + rawUrl;
                                 }
 
-                                // Pastikan memiliki ekstensi .html jika belum ada
                                 if (!rawUrl.endsWith('.html') && !rawUrl.includes('?')) {
                                     rawUrl = rawUrl + '.html';
                                 }
@@ -147,48 +144,23 @@
                     })
                     .catch(err => {
                         console.error('Error loading tools:', err);
-                        container.innerHTML = '<p class="text-xs text-red-500">Gagal memuat daftar tools. Periksa koneksi atau lokasi file JSON.</p>';
+                        container.innerHTML = '<p class="text-xs text-red-500 font-mono">Gagal memuat daftar tools. Periksa koneksi atau lokasi file JSON.</p>';
                     });
             }
 
-            function initToolsPage() {
-                if (typeof loadComponents === 'function') {
-                    loadComponents();
-                }
-                renderTools();
-            }
-
-            // Jalankan langsung ketika elemen dimuat/diinjeksi Swup
-            initToolsPage();
-
-            // Pasang hook Swup jika pengguna kembali/navigasi ulang
-            if (window.swupInstance) {
-                window.swupInstance.hooks.on('page:view', initToolsPage);
-                window.swupInstance.hooks.on('content:replace', initToolsPage);
-            }
+            renderTools();
         </script>
     </main>
 
     <!-- FOOTER KOSONG -->
     <footer id="site-footer" class="max-w-2xl w-full mx-auto px-6 pt-12 pb-10 mt-16 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500"></footer>
 
-    <!-- GLOBAL INITIALIZATION (PERSISTEN DI BANYAK HALAMAN) -->
+    <!-- SKRIP INISIALISASI SWUP & COMPONENT LOADER -->
     <script>
-        // Singleton Swup
-        if (!window.swupInstance) {
-            window.swupInstance = new Swup({
-                plugins: [
-                    new SwupScriptsPlugin(),
-                    new SwupHeadPlugin({ awaitAssets: true, persistAssets: true })
-                ]
-            });
-        }
-
-        // Global Component Loader (Header & Footer)
-        window.loadComponents = function() {
+        function loadComponents() {
             const headerEl = document.getElementById('site-header');
             if (headerEl && !headerEl.innerHTML.trim()) {
-                fetch('components/header.html')
+                fetch('https://ikhsannahdillah.github.io/components/header.html')
                     .then(res => res.text())
                     .then(html => headerEl.innerHTML = html)
                     .catch(err => console.error('Header Load Error:', err));
@@ -196,17 +168,30 @@
 
             const footerEl = document.getElementById('site-footer');
             if (footerEl && !footerEl.innerHTML.trim()) {
-                fetch('components/footer.html')
+                fetch('https://ikhsannahdillah.github.io/components/footer.html')
                     .then(res => res.text())
                     .then(html => footerEl.innerHTML = html)
                     .catch(err => console.error('Footer Load Error:', err));
             }
-        };
+        }
 
-        loadComponents();
+        document.addEventListener('DOMContentLoaded', loadComponents);
 
-        if (window.swupInstance) {
-            window.swupInstance.hooks.on('page:view', window.loadComponents);
+        if (typeof window.swupInstance === 'undefined') {
+            window.swupInstance = new Swup({
+                plugins: [
+                    new SwupScriptsPlugin(),
+                    new SwupHeadPlugin({ awaitAssets: true, persistAssets: true })
+                ],
+                resolveUrl: (url) => url
+            });
+
+            window.swupInstance.hooks.on('page:view', () => {
+                loadComponents();
+                if (typeof renderTools === 'function') {
+                    renderTools();
+                }
+            });
         }
     </script>
 </body>
