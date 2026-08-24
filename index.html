@@ -115,12 +115,28 @@
                         }
 
                         container.innerHTML = latestArticles.map(item => {
-                            const link = item.slug ? (item.slug.includes('.html') ? item.slug : `article.html?slug=${item.slug}`) : '#';
+                            let rawLink = item.slug || item.url || '#';
+                            
+                            // Menyesuaikan format URL agar bisa diklik dengan benar
+                            if (rawLink !== '#') {
+                                if (!rawLink.includes('.html')) {
+                                    rawLink = `articles/${rawLink}.html`;
+                                }
+                                // Menghapus tanda slash diawal jika ada (misal: /articles/judul.html -> articles/judul.html)
+                                if (rawLink.startsWith('/')) {
+                                    rawLink = rawLink.substring(1);
+                                }
+                            }
+
+                            let imageSrc = item.cover || item.ikon || 'assets/img/og-image.jpg';
+                            if (imageSrc.startsWith('/')) {
+                                imageSrc = imageSrc.substring(1);
+                            }
+
                             const title = item.title || item.judul;
-                            const imageSrc = item.cover || item.ikon || 'assets/img/og-image.jpg';
 
                             return `
-                                <a href="${link}" class="group flex items-center gap-3.5 p-2.5 -mx-2.5 rounded-xl hover:bg-gray-100/80 active:bg-gray-200/60 transition-all duration-200">
+                                <a href="${rawLink}" class="group flex items-center gap-3.5 p-2.5 -mx-2.5 rounded-xl hover:bg-gray-100/80 active:bg-gray-200/60 transition-all duration-200">
                                     <!-- Thumbnail Kotak Presisi -->
                                     <div class="w-11 h-11 sm:w-12 sm:h-12 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 border border-gray-200/60 shadow-sm">
                                         <img src="${imageSrc}" alt="Cover" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 ease-out">

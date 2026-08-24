@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Meta Tag SEO Utama (Cukup Title, Description, & Author) -->
+    <!-- Meta Tag SEO Utama -->
     <title>Topik Tulisan - Catatan Al Ikhsan Nahdillah Muis Malik</title>
     <meta name="description" content="Kumpulan tulisan dan artikel berdasarkan topik pilihan di Catatan Al Ikhsan Nahdillah Muis Malik.">
     <meta name="author" content="Al Ikhsan Nahdillah Muis Malik">
     
-    <!-- Mencegah duplicate content & menghemat crawl budget di Google -->
+    <!-- Mencegah duplicate content & menghemat crawl budget -->
     <meta name="robots" content="noindex, follow">
 
     <!-- CSS & Typography -->
@@ -74,9 +74,10 @@
 
                 if (!container) return;
 
-                // 1. Ambil parameter 'tag' dari URL
+                // 1. Ambil parameter 'tag' dari URL dan decode
                 const urlParams = new URLSearchParams(window.location.search);
-                const selectedTag = urlParams.get('tag');
+                const rawTag = urlParams.get('tag');
+                const selectedTag = rawTag ? decodeURIComponent(rawTag) : null;
 
                 if (!selectedTag) {
                     if (tagEl) tagEl.innerText = '-';
@@ -113,6 +114,10 @@
                 // 4. Ambil Data Artikel dari JSON
                 fetch('assets/js/articles.json')
                     .then(res => {
+                        if (!res.ok) return fetch('assets/js/artikel.json');
+                        return res;
+                    })
+                    .then(res => {
                         if (!res.ok) throw new Error('File JSON tidak ditemukan');
                         return res.json();
                     })
@@ -142,13 +147,27 @@
 
                         container.innerHTML = filtered.map(item => {
                             const title = item.title || item.judul;
-                            const slug = item.slug;
+                            let rawLink = item.slug || item.url || '#';
+                            
+                            // Pembersihan dan penyesuaian format URL
+                            if (rawLink !== '#') {
+                                if (!rawLink.includes('.html')) {
+                                    rawLink = `articles/${rawLink}.html`;
+                                }
+                                if (rawLink.startsWith('/')) {
+                                    rawLink = rawLink.substring(1);
+                                }
+                            }
+
                             const rawDate = item.date || item.tanggal || '';
-                            const coverImg = item.cover || item.ikon || 'assets/img/og-image.jpg';
+                            let coverImg = item.cover || item.ikon || 'assets/img/og-image.jpg';
+                            if (coverImg.startsWith('/')) {
+                                coverImg = coverImg.substring(1);
+                            }
 
                             return `
-                                <a href="article.html?slug=${slug}" class="group relative flex items-center gap-4 py-4 px-3 rounded-xl transition-all duration-300 ease-out hover:bg-gray-50 hover:shadow-sm hover:-translate-y-0.5">
-                                    <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center overflow-hidden rounded-lg bg-gray-100 border border-gray-200/80 shadow-xs relative">
+                                <a href="${rawLink}" class="group relative flex items-center gap-4 py-4 px-3 rounded-xl transition-all duration-300 ease-out hover:bg-gray-50 hover:shadow-sm hover:-translate-y-0.5">
+                                    <div class="w-16 h-12 sm:w-20 sm:h-14 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 border border-gray-200/80 shadow-xs relative">
                                         <img src="${coverImg}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500 ease-out">
                                         <div class="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/10 transition duration-300"></div>
                                     </div>

@@ -101,13 +101,33 @@
                                 `;
                             }
 
+                            // Penyesuaian Otomatis URL ke folder tools/
+                            let rawUrl = tool.url || tool.slug || tool.path || '#';
+                            
+                            if (rawUrl !== '#') {
+                                // Hapus slash diawal jika ada
+                                if (rawUrl.startsWith('/')) {
+                                    rawUrl = rawUrl.substring(1);
+                                }
+                                
+                                // Jika tidak mengandung folder 'tools/', tambahkan 'tools/'
+                                if (!rawUrl.startsWith('tools/')) {
+                                    rawUrl = 'tools/' + rawUrl;
+                                }
+
+                                // Pastikan memiliki ekstensi .html jika belum ada
+                                if (!rawUrl.endsWith('.html') && !rawUrl.includes('?')) {
+                                    rawUrl = rawUrl + '.html';
+                                }
+                            }
+
                             return `
-                                <a href="${tool.url}" class="group block p-5 rounded-2xl border border-gray-200/80 bg-white hover:border-blue-500 hover:shadow-md transition duration-200">
+                                <a href="${rawUrl}" class="group block p-5 rounded-2xl border border-gray-200/80 bg-white hover:border-blue-500 hover:shadow-md transition duration-200">
                                     <div class="flex items-start justify-between gap-4">
                                         <div class="space-y-1.5">
                                             <div class="flex items-center gap-2">
                                                 <span class="px-2 py-0.5 text-[10px] font-mono font-semibold uppercase bg-blue-50 text-blue-600 rounded-md border border-blue-100">
-                                                    ${tool.category}
+                                                    ${tool.category || 'Tool'}
                                                 </span>
                                             </div>
                                             <h2 class="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition flex items-center gap-1.5">

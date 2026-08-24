@@ -46,7 +46,7 @@
     
     <!-- Daftar Tools -->
     <url>
-        <loc>https://ikhsannahdillah.github.io/splitter-calculator.html</loc>
+        <loc>https://ikhsannahdillah.github.io/tools/splitter-calculator.html</loc>
         <lastmod>2026-08-20</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
@@ -54,7 +54,7 @@
 
     <!-- Daftar Artikel Dinamis -->
     <url>
-        <loc>https://ikhsannahdillah.github.io/article.html?slug=kalkulator-splitter-rasio-tool-praktis-hitung-redaman-jaringan-ftth</loc>
+        <loc>https://ikhsannahdillah.github.io/articles/kalkulator-splitter-rasio-tool-praktis-hitung-redaman-jaringan-ftth.html</loc>
         <lastmod>2026-08-20</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
