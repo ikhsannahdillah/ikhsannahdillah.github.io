@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # Lokasi Sitemap
-Sitemap: https://domainanda.com/sitemap.xml
+Sitemap: https://ikhsannahdillah.github.io/sitemap.xml
