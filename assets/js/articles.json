@@ -1,13 +1,13 @@
 [
 	{
 	  "title": "Kalkulator Splitter Rasio: Tool Praktis Hitung Redaman Jaringan FTTH",
-	  "slug": "kalkulator-splitter-rasio-tool-praktis-hitung-redaman-jaringan-ftth",
-	  "date": "2026-08-23",
+	  "slug": "/articles/kalkulator-splitter-rasio-tool-praktis-hitung-redaman-jaringan-ftth.html",
+	  "url": "/articles/kalkulator-splitter-rasio-tool-praktis-hitung-redaman-jaringan-ftth.html",
+	  "date": "2026-08-24",
 	  "tags": [
 		"FTTH"
 	  ],
-	  "cover": "assets/img/artikel/kalkulator-splitter-rasio.jpg",
-	  "excerpt": "Dalam perencanaan dan pemeliharaan jaringan fiber optik (FTTH), perhitungan redaman daya laser merupakan langkah krusial untuk memastikan kualitas sin...",
-	  "content": "<p>Dalam perencanaan dan pemeliharaan jaringan fiber optik (FTTH), perhitungan redaman daya laser merupakan langkah krusial untuk memastikan kualitas sinyal sampai ke pelanggan tetap optimal. Untuk mempermudah teknisi maupun penggiat jaringan dalam mengukur estimasi tersebut, kami menghadirkan <strong>Kalkulator Splitter Rasio</strong>. <em>Tool</em> interaktif ini dirancang khusus untuk membantu Anda menghitung persentase rasio pada Optical Distribution Cabinet (ODC) serta mengestimasi total redaman pada Optical Distribution Point (ODP) berbasis pasif <em>splitter</em> secara cepat dan akurat cukup dengan memasukkan nilai <em>Input Laser Power</em> (dBm).</p><p><br></p><p>Dengan menggunakan kalkulator ini, Anda tidak perlu lagi melakukan perhitungan rumus redaman secara manual saat merancang topologi jaringan di lapangan. Perlu diingat bahwa hasil kalkulasi merupakan nilai rasio ideal secara teoretis; sehingga Anda tetap dapat memperhitungkan faktor <em>attenuation losses</em> tambahan seperti titik sambungan (<em>splicing</em>), konektor SC/UPC/APC, <em>adapter/barel</em>, hingga tekukan kabel (<em>bend radius</em>). Coba <em>tool</em> Kalkulator Splitter Rasio ini sekarang untuk membantu efisiensi dan ketepatan instalasi jaringan FTTH Anda.</p><p><br></p><p>Berikut link kalkulator Kalkulator Splitter Rasio : <a href=\"https://ikhsannahdillah.github.io/splitter-calculator.html\" rel=\"noopener noreferrer\" target=\"_blank\">https://ikhsannahdillah.github.io/splitter-calculator.html</a></p>"
+	  "cover": "/assets/img/artikel/kalkulator-splitter-rasio.jpg",
+	  "excerpt": "Dengan menggunakan kalkulator ini, Anda tidak perlu lagi melakukan perhitungan rumus redaman secara manual saat merancang topologi jaringan di lapangan."
 	}
 ]
