@@ -9,5 +9,17 @@
 	  ],
 	  "cover": "/assets/img/artikel/kalkulator-splitter-rasio.jpg",
 	  "excerpt": "Dengan menggunakan kalkulator ini, Anda tidak perlu lagi melakukan perhitungan rumus redaman secara manual saat merancang topologi jaringan di lapangan."
+	},
+	{
+	  "title": "Bye-Bye Unlimited, Welcome FUP Starlink!",
+	  "slug": "/articles/bye-bye-unlimited-welcome-fup-starlink.html",
+	  "url": "/articles/bye-bye-unlimited-welcome-fup-starlink.html",
+	  "date": "2026-08-24",
+	  "tags": [
+	    "Starlink",
+	    "FUP"
+	  ],
+	  "cover": "/assets/img/og-image.jpg",
+	  "excerpt": "Kemarin saya sempat diminta bantuan oleh seorang teman untuk mengecek koneksi internet Starlink di tempatnya yang mendadak terasa sangat lambat. Padah..."
 	}
 ]
