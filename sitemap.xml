@@ -55,7 +55,13 @@
     <!-- Daftar Artikel Dinamis -->
     <url>
         <loc>https://ikhsannahdillah.github.io/articles/kalkulator-splitter-rasio-tool-praktis-hitung-redaman-jaringan-ftth.html</loc>
-        <lastmod>2026-08-20</lastmod>
+        <lastmod>2026-08-24</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://ikhsannahdillah.github.io/articles/bye-bye-unlimited-welcome-fup-starlink.html</loc>
+        <lastmod>2026-08-24</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
