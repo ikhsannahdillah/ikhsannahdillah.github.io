@@ -3,35 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editor Artikel HTML - Static Generator</title>
+    <title>Visual Article Editor</title>
     
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
 
-    <!-- Stylesheet Tambahan & Perbaikan CSS Reset Tailwind -->
     <style>
         body { font-family: 'Inter', sans-serif; }
-        
-        /* Custom Styling Editor Surface */
-        .editor-content {
-            min-height: 400px;
-            outline: none;
+        .ql-container { 
+            border-bottom-left-radius: 0.75rem; 
+            border-bottom-right-radius: 0.75rem; 
+            min-height: 380px; 
+            font-size: 1rem;
+        }
+        .ql-toolbar { 
+            border-top-left-radius: 0.75rem; 
+            border-top-right-radius: 0.75rem; 
+            background-color: #f9fafb; 
         }
 
-        /* Styling Container Gambar */
         .custom-image-container {
             position: relative;
             max-width: 100%;
-            margin: 1.5rem 0;
+            margin: 0.75rem 0;
+            user-select: none;
             clear: both;
         }
         .custom-image-container img {
             display: block;
             max-width: 100%;
             height: auto;
-            border-radius: 0.75rem;
+            border-radius: 0.5rem;
         }
+        .custom-image-container.selected img { outline: 2px solid #2563eb; }
+
         .custom-image-container[data-align="left"] { display: block; text-align: left; }
         .custom-image-container[data-align="left"] img { margin-right: auto; margin-left: 0; }
         .custom-image-container[data-align="center"] { display: block; text-align: center; }
@@ -39,183 +45,351 @@
         .custom-image-container[data-align="right"] { display: block; text-align: right; }
         .custom-image-container[data-align="right"] img { margin-left: auto; margin-right: 0; }
 
-        /* PERBAIKAN STYLING NUMBERING & BULLETS UNTUK TAILWIND CSS RESET */
-        #editor-surface ul, #article-content ul {
-            list-style-type: disc !important;
-            padding-left: 1.5rem !important;
-            margin-top: 0.75rem !important;
-            margin-bottom: 0.75rem !important;
+        .resize-handle {
+            display: none;
+            position: absolute;
+            right: -6px;
+            bottom: -6px;
+            width: 14px;
+            height: 14px;
+            background-color: #2563eb;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            cursor: se-resize;
+            z-index: 10;
         }
-        #editor-surface ol, #article-content ol {
-            list-style-type: decimal !important;
-            padding-left: 1.5rem !important;
-            margin-top: 0.75rem !important;
-            margin-bottom: 0.75rem !important;
+        .custom-image-container.selected .resize-handle { display: block; }
+
+        .img-toolbar {
+            display: none;
+            position: absolute;
+            top: -42px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            padding: 4px 8px;
+            border-radius: 8px;
+            gap: 4px;
+            z-index: 30;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
-        #editor-surface li, #article-content li {
-            margin-top: 0.25rem !important;
-            margin-bottom: 0.25rem !important;
+        .custom-image-container.selected .img-toolbar { display: flex; }
+        .img-toolbar button {
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 5px;
+            background: #334155;
+            border: none;
+            cursor: pointer;
+            transition: background 0.15s;
         }
-        #editor-surface blockquote, #article-content blockquote {
-            border-left: 4px solid #e5e7eb;
-            padding-left: 1rem;
-            font-style: italic;
-            color: #4b5563;
-            margin: 1rem 0;
-        }
+        .img-toolbar button:hover { background: #2563eb; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 antialiased min-h-screen">
+<body class="bg-gray-100 text-gray-800 antialiased min-h-screen py-10 px-4">
 
-    <!-- NAVIGATION HEADER -->
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <h1 class="text-lg font-bold text-gray-900">Artikel Static HTML Generator</h1>
-            <div class="flex items-center gap-3">
-                <button id="btn-export-html" class="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-4 py-2 rounded-lg transition shadow-sm flex items-center gap-2">
+    <input type="file" id="image-file-input" accept="image/*" class="hidden">
+
+    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8">
+        
+        <!-- Header Editor -->
+        <div class="border-b border-gray-100 pb-5 mb-6 flex flex-wrap gap-3 justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Visual Article Editor</h1>
+                <p class="text-sm text-gray-500 mt-1">Sistem posisi, resize presisi, dan ekspor statis dengan Root Path</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="btn-export-html" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2.5 rounded-xl text-sm transition flex items-center gap-2 shadow-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                    Ekspor HTML Statis
+                    Download HTML Statis
+                </button>
+                <button id="btn-show-json" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2.5 rounded-xl text-sm transition flex items-center gap-2 shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                    Kode JSON
                 </button>
             </div>
         </div>
-    </header>
 
-    <!-- CONTAINER UTAMA -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <!-- PANEL KIRI: FORM & EDITOR (8 COLUMNS) -->
-            <div class="lg:col-span-8 space-y-6">
-                
-                <!-- METADATA FORM CARD -->
-                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
-                    <h2 class="text-md font-semibold text-gray-900 mb-2">Informasi Metadata Artikel</h2>
-                    
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Judul Artikel</label>
-                        <input type="text" id="article-title-input" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Masukkan judul artikel...">
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Slug URL</label>
-                            <input type="text" id="article-slug-input" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="judul-artikel-anda">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Tanggal Publikasi</label>
-                            <input type="date" id="article-date" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">URL Cover / Featured Image</label>
-                        <input type="text" id="article-cover-input" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="/assets/img/cover-sample.jpg">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Ringkasan (Excerpt / Meta Description)</label>
-                        <textarea id="article-excerpt-input" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tuliskan ringkasan singkat..."></textarea>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Tags (Pisahkan dengan koma)</label>
-                        <input type="text" id="article-tags-input" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Opini, Teknologi, Tutorial">
-                    </div>
-                </div>
-
-                <!-- EDITOR TOOLBAR & SURFACE -->
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                    
-                    <!-- TOOLBAR EDITOR -->
-                    <div class="p-3 border-b border-gray-200 bg-gray-50 flex flex-wrap gap-2 items-center">
-                        <button type="button" onclick="execCmd('bold')" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs font-bold hover:bg-gray-100">B</button>
-                        <button type="button" onclick="execCmd('italic')" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs italic hover:bg-gray-100">I</button>
-                        <button type="button" onclick="execCmd('underline')" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs underline hover:bg-gray-100">U</button>
-                        <span class="border-r border-gray-300 h-5 my-auto"></span>
-                        <button type="button" onclick="execCmd('formatBlock', '<h2>')" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs font-bold hover:bg-gray-100">H2</button>
-                        <button type="button" onclick="execCmd('formatBlock', '<h3>')" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs font-bold hover:bg-gray-100">H3</button>
-                        <span class="border-r border-gray-300 h-5 my-auto"></span>
-                        <button type="button" onclick="execCmd('insertUnorderedList')" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs hover:bg-gray-100">• Bullet List</button>
-                        <button type="button" onclick="execCmd('insertOrderedList')" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs hover:bg-gray-100">1. Number List</button>
-                        <button type="button" onclick="execCmd('formatBlock', '<blockquote>')" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs hover:bg-gray-100">Quote</button>
-                        <span class="border-r border-gray-300 h-5 my-auto"></span>
-                        <button type="button" onclick="insertLink()" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs hover:bg-gray-100">Link</button>
-                        <button type="button" onclick="insertImage()" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs hover:bg-gray-100">Sisipkan Gambar</button>
-                    </div>
-
-                    <!-- AREA EDITOR EDITABLE -->
-                    <div id="editor-surface" contenteditable="true" class="p-6 editor-content prose max-w-none text-gray-800 focus:outline-none">
-                        <p>Tuliskan artikel Anda di sini...</p>
-                    </div>
-                </div>
-
+        <!-- Meta Form -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Judul Artikel</label>
+                <input type="text" id="article-title" placeholder="Masukkan judul artikel..." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-base font-medium">
             </div>
 
-            <!-- PANEL KANAN: INFORMASI & PETUNJUK (4 COLUMNS) -->
-            <div class="lg:col-span-4 space-y-6">
-                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-3">
-                    <h3 class="text-sm font-bold text-gray-900">Petunjuk Penggunaan</h3>
-                    <ul class="text-xs text-gray-600 space-y-2 list-disc pl-4">
-                        <li>Isi judul, slug, dan metadata artikel pada panel sebelah kiri.</li>
-                        <li>Gunakan tombol toolbar di atas area teks untuk menambahkan list, tebal, miring, atau heading.</li>
-                        <li>Klik <strong>Ekspor HTML Statis</strong> untuk mengunduh berkas `.html` yang siap diunggah ke repositori GitHub Pages/Hosting Anda.</li>
-                    </ul>
+            <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Header Image (Featured Image)</label>
+                <div class="flex gap-2">
+                    <input type="text" id="article-cover" value="/assets/img/og-image.jpg" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="file" id="cover-file-input" accept="image/*" class="hidden">
+                    <button type="button" id="btn-browse-cover" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-xl text-xs font-semibold text-gray-700 whitespace-nowrap transition">
+                        Pilih Header
+                    </button>
                 </div>
             </div>
 
+            <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Tags / Kategori (Pisahkan dengan koma)</label>
+                <input type="text" id="article-tags" placeholder="Contoh: Social Engineering, Security, Cyber" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Tanggal Rilis</label>
+                <input type="date" id="article-date" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Slug URL (Otomatis)</label>
+                <input type="text" id="article-slug" placeholder="judul-artikel" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-600 text-sm outline-none" readonly>
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Ringkasan / Excerpt</label>
+                <textarea id="article-excerpt" rows="2" placeholder="Ringkasan singkat..." class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+            </div>
         </div>
-    </main>
 
-    <!-- LOGIKA JAVASCRIPT -->
+        <!-- Area Editor -->
+        <div class="mb-6">
+            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Isi Konten Artikel</label>
+            <div id="editor"></div>
+        </div>
+
+    </div>
+
+    <!-- MODAL POPUP JSON -->
+    <div id="json-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl max-w-3xl w-full p-6 shadow-2xl border border-gray-100 flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center pb-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">Hasil Kode JSON Artikel</h3>
+                <button id="btn-close-modal" class="text-gray-400 hover:text-gray-600 font-bold text-xl">&times;</button>
+            </div>
+            
+            <div class="my-4 flex-grow overflow-hidden">
+                <textarea id="json-output" class="w-full h-80 p-4 font-mono text-xs bg-gray-900 text-green-400 rounded-xl outline-none resize-none border border-gray-800" readonly></textarea>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <button id="btn-copy-json" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-xl text-sm transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                    Salin JSON
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+
     <script>
-        // DOM Elements
-        const titleInput = document.getElementById('article-title-input');
-        const slugInput = document.getElementById('article-slug-input');
-        const coverInput = document.getElementById('article-cover-input');
-        const excerptInput = document.getElementById('article-excerpt-input');
-        const tagsInput = document.getElementById('article-tags-input');
-        const editorSurface = document.getElementById('editor-surface');
-        const btnExportHtml = document.getElementById('btn-export-html');
+        const BlockEmbed = Quill.import('blots/block/embed');
 
-        // Auto Generate Slug saat Judul diisi
-        titleInput.addEventListener('input', () => {
-            const slug = titleInput.value
-                .toLowerCase()
-                .replace(/[^a-z0-9 -]/g, '')
-                .replace(/\s+/g, '-')
-                .replace(/-+/g, '-');
-            slugInput.value = slug;
+        class CustomImageBlot extends BlockEmbed {
+            static create(value) {
+                let node = super.create();
+                node.className = 'custom-image-container';
+                node.setAttribute('data-align', 'center');
+                
+                node.innerHTML = `
+                    <div class="img-toolbar">
+                        <button type="button" class="btn-align" data-align="left">Kiri</button>
+                        <button type="button" class="btn-align" data-align="center">Tengah</button>
+                        <button type="button" class="btn-align" data-align="right">Kanan</button>
+                    </div>
+                    <img src="${value}" />
+                    <div class="resize-handle"></div>
+                `;
+                return node;
+            }
+
+            static value(node) {
+                const img = node.querySelector('img');
+                return img ? img.src : '';
+            }
+        }
+        CustomImageBlot.blotName = 'customImage';
+        CustomImageBlot.tagName = 'div';
+        Quill.register(CustomImageBlot);
+
+        const quill = new Quill('#editor', {
+            theme: 'snow',
+            placeholder: 'Tuliskan artikelmu di sini...',
+            modules: {
+                toolbar: [
+                    [{ 'header': [2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'blockquote'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ['link', 'image', 'code-block'],
+                    ['clean']
+                ]
+            }
         });
 
-        // Set default date hari ini
+        let activeContainer = null;
+
+        document.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('btn-align')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const align = e.target.getAttribute('data-align');
+                const container = e.target.closest('.custom-image-container');
+                if (container) {
+                    container.setAttribute('data-align', align);
+                }
+                return;
+            }
+
+            const container = e.target.closest('.custom-image-container');
+            if (container) {
+                if (activeContainer && activeContainer !== container) {
+                    activeContainer.classList.remove('selected');
+                }
+                activeContainer = container;
+                activeContainer.classList.add('selected');
+            } else if (activeContainer && !e.target.closest('.img-toolbar')) {
+                activeContainer.classList.remove('selected');
+                activeContainer = null;
+            }
+        });
+
+        document.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('resize-handle')) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const container = e.target.closest('.custom-image-container');
+                const img = container.querySelector('img');
+                const startX = e.clientX;
+                const startWidth = img.clientWidth;
+
+                const onMouseMove = (moveEvent) => {
+                    const newWidth = startWidth + (moveEvent.clientX - startX);
+                    if (newWidth > 60) {
+                        img.style.width = newWidth + 'px';
+                        img.style.height = 'auto';
+                    }
+                };
+
+                const onMouseUp = () => {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                };
+
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            }
+        });
+
+        const TARGET_IMG_PATH = '/assets/img/artikel/';
+        const imageFileInput = document.getElementById('image-file-input');
+
+        quill.getModule('toolbar').addHandler('image', () => imageFileInput.click());
+
+        imageFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const fullImagePath = TARGET_IMG_PATH + file.name;
+                const range = quill.getSelection(true) || { index: quill.getLength() };
+                
+                quill.insertEmbed(range.index, 'customImage', fullImagePath);
+                quill.setSelection(range.index + 1);
+
+                imageFileInput.value = '';
+            }
+        });
+
+        const btnBrowseCover = document.getElementById('btn-browse-cover');
+        const coverFileInput = document.getElementById('cover-file-input');
+        const coverInput = document.getElementById('article-cover');
+
+        btnBrowseCover.addEventListener('click', () => coverFileInput.click());
+        coverFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                coverInput.value = TARGET_IMG_PATH + file.name;
+                coverFileInput.value = '';
+            }
+        });
+
         document.getElementById('article-date').valueAsDate = new Date();
 
-        // Helper Command Editor
-        function execCmd(command, value = null) {
-            document.execCommand(command, false, value);
-        }
+        const titleInput = document.getElementById('article-title');
+        const slugInput = document.getElementById('article-slug');
+        const excerptInput = document.getElementById('article-excerpt');
+        const tagsInput = document.getElementById('article-tags');
 
-        // Helper Link
-        function insertLink() {
-            const url = prompt('Masukkan URL Link:');
-            if (url) {
-                document.execCommand('createLink', false, url);
+        titleInput.addEventListener('input', () => {
+            slugInput.value = titleInput.value.toLowerCase().replace(/[^a-z0-9 -]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
+        });
+
+        quill.on('text-change', () => {
+            const text = quill.getText().trim();
+            if (text.length > 0) {
+                excerptInput.value = text.substring(0, 150) + (text.length > 150 ? '...' : '');
             }
+        });
+
+        const modal = document.getElementById('json-modal');
+        const jsonOutput = document.getElementById('json-output');
+        const btnShowJson = document.getElementById('btn-show-json');
+        const btnCloseModal = document.getElementById('btn-close-modal');
+        const btnCopyJson = document.getElementById('btn-copy-json');
+
+        function getCleanedContent() {
+            const editorClone = document.querySelector('.ql-editor').cloneNode(true);
+            editorClone.querySelectorAll('.img-toolbar, .resize-handle').forEach(el => el.remove());
+            editorClone.querySelectorAll('.custom-image-container').forEach(w => w.classList.remove('selected'));
+            return editorClone.innerHTML;
         }
 
-        // Helper Gambar
-        function insertImage() {
-            const url = prompt('Masukkan URL Gambar:');
-            if (url) {
-                const imgHtml = `<div class="custom-image-container" data-align="center"><img src="${url}" alt="Gambar Artikel" /></div>`;
-                document.execCommand('insertHTML', false, imgHtml);
+        btnShowJson.addEventListener('click', () => {
+            const title = titleInput.value.trim();
+            if (!title) return alert('Silakan masukkan judul artikel terlebih dahulu!');
+
+            const rawTags = tagsInput.value.split(',').map(t => t.trim()).filter(t => t.length > 0);
+            const rawSlug = slugInput.value;
+            const fullHtmlPath = `/articles/${rawSlug}.html`;
+
+            let coverPath = coverInput.value.trim() || '/assets/img/og-image.jpg';
+            if (!coverPath.startsWith('/') && !coverPath.startsWith('http')) {
+                coverPath = '/' + coverPath;
             }
-        }
 
-        // Format Tanggal Indonesia
-        function formatTanggalIndo(dateString) {
-            if (!dateString) return '';
-            const date = new Date(dateString);
+            const articleData = {
+                title: title,
+                slug: fullHtmlPath,
+                url: fullHtmlPath,
+                date: document.getElementById('article-date').value,
+                tags: rawTags,
+                cover: coverPath,
+                excerpt: excerptInput.value
+            };
+
+            jsonOutput.value = JSON.stringify(articleData, null, 2);
+            modal.classList.remove('hidden');
+        });
+
+        btnCloseModal.addEventListener('click', () => modal.classList.add('hidden'));
+
+        btnCopyJson.addEventListener('click', () => {
+            jsonOutput.select();
+            navigator.clipboard.writeText(jsonOutput.value).then(() => {
+                const originalText = btnCopyJson.innerHTML;
+                btnCopyJson.innerHTML = `? Tersalin!`;
+                btnCopyJson.classList.replace('bg-blue-600', 'bg-green-600');
+                
+                setTimeout(() => {
+                    btnCopyJson.innerHTML = originalText;
+                    btnCopyJson.classList.replace('bg-green-600', 'bg-blue-600');
+                }, 2000);
+            });
+        });
+
+        function formatTanggalIndo(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return dateStr;
             return date.toLocaleDateString('id-ID', {
                 day: 'numeric',
                 month: 'long',
@@ -223,14 +397,8 @@
             });
         }
 
-        // Membersihkan Konten sebelum Diekspor
-        function getCleanedContent() {
-            return editorSurface.innerHTML;
-        }
+        const btnExportHtml = document.getElementById('btn-export-html');
 
-        // =========================================================
-        // GENERATE & EKSPOR HTML STATIS
-        // =========================================================
         btnExportHtml.addEventListener('click', () => {
             const title = titleInput.value.trim();
             if (!title) return alert('Silakan masukkan judul artikel terlebih dahulu!');
@@ -350,31 +518,6 @@ ${JSON.stringify(schemaData, null, 2)}
 		.custom-image-container[data-align="center"] img { margin-left: auto; margin-right: auto; }
 		.custom-image-container[data-align="right"] { display: block; text-align: right; }
 		.custom-image-container[data-align="right"] img { margin-left: auto; margin-right: 0; }
-
-		/* FIX PERBAIKAN NUMBERING & BULLETS UNTUK TAILWIND CSS RESET */
-		#article-content ul {
-			list-style-type: disc !important;
-			padding-left: 1.5rem !important;
-			margin-top: 0.75rem !important;
-			margin-bottom: 0.75rem !important;
-		}
-		#article-content ol {
-			list-style-type: decimal !important;
-			padding-left: 1.5rem !important;
-			margin-top: 0.75rem !important;
-			margin-bottom: 0.75rem !important;
-		}
-		#article-content li {
-			margin-top: 0.25rem !important;
-			margin-bottom: 0.25rem !important;
-		}
-		#article-content blockquote {
-			border-left: 4px solid #e5e7eb;
-			padding-left: 1rem;
-			font-style: italic;
-			color: #4b5563;
-			margin: 1rem 0;
-		}
 	</style>
 
 	<!-- Swup & Plugins -->
@@ -503,52 +646,27 @@ ${JSON.stringify(schemaData, null, 2)}
 					.then(res => res.text())
 					.then(html => {
 						footerEl.innerHTML = html;
-						if (isSubfolder) {
-							footerEl.querySelectorAll('a[href]').forEach(a => {
-								const href = a.getAttribute('href');
-								if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('/')) {
-									a.setAttribute('href', '../' + href);
-								}
-							});
-						}
 					})
 					.catch(err => console.error('Gagal memuat footer:', err));
 			}
 		}
 
-		document.addEventListener("DOMContentLoaded", loadComponents);
+		document.addEventListener('DOMContentLoaded', loadComponents);
+
+		const swup = new Swup({
+			plugins: [new SwupHeadPlugin(), new SwupScriptsPlugin()]
+		});
+		swup.hooks.on('page:view', loadComponents);
 	<\/script>
-
-	<!-- INISIALISASI SWUP -->
-	<script>
-		if (typeof Swup !== 'undefined') {
-			const swup = new Swup({
-				plugins: [
-					new SwupScriptsPlugin(),
-					new SwupHeadPlugin({
-						awaitAssets: true
-					})
-				]
-			});
-
-			swup.hooks.on('page:view', () => {
-				loadComponents();
-			});
-		}
-	<\/script>
-
 </body>
 </html>`;
 
-            const blob = new Blob([fullStaticHtml], { type: 'text/html;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${slug}.html`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            const blob = new Blob([fullStaticHtml], { type: 'text/html;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${slug || 'article'}.html`;
+            link.click();
+            URL.revokeObjectURL(link.href);
         });
     </script>
 </body>
