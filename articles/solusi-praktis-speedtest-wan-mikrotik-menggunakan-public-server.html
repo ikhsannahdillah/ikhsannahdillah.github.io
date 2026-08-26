@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<!-- Primary Meta Tags -->
+	<title id="meta-title">Solusi Praktis Speedtest WAN MikroTik Menggunakan Public Server - Catatan Al Ikhsan Nahdillah Muis Malik</title>
+	<meta name="title" id="meta-title-tag" content="Solusi Praktis Speedtest WAN MikroTik Menggunakan Public Server - Catatan Al Ikhsan Nahdillah Muis Malik">
+	<meta name="description" id="meta-desc" content="Server-server publik ini disediakan dan dibagikan secara gratis oleh komunitas ISP untuk membantu para pengelola jaringan. Salah satu server yang bisa Anda gunakan adalah milik...">
+	<meta name="keywords" id="meta-keywords" content="Mikrotik, Speedtest">
+	<meta name="author" content="Al Ikhsan Nahdillah Muis Malik">
+	<meta name="robots" content="index, follow, max-image-preview:large">
+
+	<!-- Open Graph / Facebook / WhatsApp -->
+	<meta property="og:type" content="article">
+	<meta property="og:url" id="og-url" content="https://ikhsannahdillah.github.io/articles/solusi-praktis-speedtest-wan-mikrotik-menggunakan-public-server.html">
+	<meta property="og:title" id="og-title" content="Solusi Praktis Speedtest WAN MikroTik Menggunakan Public Server - Catatan Al Ikhsan Nahdillah Muis Malik">
+	<meta property="og:description" id="og-desc" content="Server-server publik ini disediakan dan dibagikan secara gratis oleh komunitas ISP untuk membantu para pengelola jaringan. Salah satu server yang bisa Anda gunakan adalah milik...">
+	<meta property="og:image" id="og-image" content="https://ikhsannahdillah.github.io/assets/img/artikel/speedtest-header.jpg">
+	<meta property="article:published_time" id="og-time" content="2026-08-26">
+	<meta property="article:author" content="Al Ikhsan Nahdillah Muis Malik">
+
+	<!-- Twitter -->
+	<meta property="twitter:card" content="summary_large_image">
+	<meta property="twitter:url" id="twitter-url" content="https://ikhsannahdillah.github.io/articles/solusi-praktis-speedtest-wan-mikrotik-menggunakan-public-server.html">
+	<meta property="twitter:title" id="twitter-title" content="Solusi Praktis Speedtest WAN MikroTik Menggunakan Public Server - Catatan Al Ikhsan Nahdillah Muis Malik">
+	<meta property="twitter:description" id="twitter-desc" content="Server-server publik ini disediakan dan dibagikan secara gratis oleh komunitas ISP untuk membantu para pengelola jaringan. Salah satu server yang bisa Anda gunakan adalah milik...">
+	<meta property="twitter:image" id="twitter-image" content="https://ikhsannahdillah.github.io/assets/img/artikel/speedtest-header.jpg">
+
+	<!-- Canonical URL -->
+	<link rel="canonical" id="canonical-url" href="https://ikhsannahdillah.github.io/articles/solusi-praktis-speedtest-wan-mikrotik-menggunakan-public-server.html">
+
+	<!-- Schema.org JSON-LD -->
+	<script type="application/ld+json" id="schema-json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://ikhsannahdillah.github.io/articles/solusi-praktis-speedtest-wan-mikrotik-menggunakan-public-server.html"
+  },
+  "headline": "Solusi Praktis Speedtest WAN MikroTik Menggunakan Public Server",
+  "description": "Server-server publik ini disediakan dan dibagikan secara gratis oleh komunitas ISP untuk membantu para pengelola jaringan. Salah satu server yang bisa Anda gunakan adalah milik...",
+  "image": "https://ikhsannahdillah.github.io/assets/img/artikel/speedtest-header.jpg",
+  "author": {
+    "@type": "Person",
+    "name": "Al Ikhsan Nahdillah Muis Malik",
+    "url": "https://ikhsannahdillah.github.io/about.html"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Al Ikhsan Nahdillah Muis Malik"
+  },
+  "datePublished": "2026-08-26",
+  "dateModified": "2026-08-26"
+}
+	</script>
+
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+	
+	<style>
+		body { font-family: 'Inter', sans-serif; }
+		.transition-fade {
+			transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+			opacity: 1;
+			transform: translateY(0);
+		}
+		html.is-animating .transition-fade {
+			opacity: 0;
+			transform: translateY(4px);
+		}
+
+		.custom-image-container {
+			position: relative;
+			max-width: 100%;
+			margin: 1.5rem 0;
+			clear: both;
+		}
+		.custom-image-container img {
+			display: block;
+			max-width: 100%;
+			height: auto;
+			border-radius: 0.75rem;
+		}
+
+		.custom-image-container[data-align="left"] { display: block; text-align: left; }
+		.custom-image-container[data-align="left"] img { margin-right: auto; margin-left: 0; }
+		.custom-image-container[data-align="center"] { display: block; text-align: center; }
+		.custom-image-container[data-align="center"] img { margin-left: auto; margin-right: auto; }
+		.custom-image-container[data-align="right"] { display: block; text-align: right; }
+		.custom-image-container[data-align="right"] img { margin-left: auto; margin-right: 0; }
+	</style>
+
+	<!-- Swup & Plugins -->
+	<script src="https://unpkg.com/swup@4"></script>
+	<script src="https://unpkg.com/@swup/scripts-plugin@2"></script>
+	<script src="https://unpkg.com/@swup/head-plugin@2"></script>
+	
+	<link rel="icon" type="image/jpg" href="/assets/img/favicon.jpg">
+</head>
+<body class="bg-white text-gray-800 antialiased min-h-screen flex flex-col justify-between">
+
+	<!-- HEADER (PERMANEN) -->
+	<header id="site-header" class="max-w-2xl w-full mx-auto px-6 pt-10 pb-8 flex justify-between items-center"></header>
+
+	<!-- KONTAINER UTAMA ARTIKEL (DI DALAM #SWUP) -->
+	<main id="swup" class="transition-fade max-w-2xl w-full mx-auto px-6 py-4 flex-grow">
+		<article>
+			
+			<!-- BREADCRUMB -->
+			<nav class="flex text-xs text-gray-500 mb-6" aria-label="Breadcrumb">
+				<ol class="inline-flex items-center space-x-1 md:space-x-2 flex-wrap">
+					<li class="inline-flex items-center">
+						<a href="/index.html" class="hover:text-blue-600 transition-colors">Beranda</a>
+					</li>
+					<li>
+						<div class="flex items-center">
+							<svg class="w-3 h-3 text-gray-400 mx-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+							<a href="/articles.html" class="hover:text-blue-600 transition-colors">Tulisan</a>
+						</div>
+					</li>
+					<li aria-current="page">
+						<div class="flex items-center">
+							<svg class="w-3 h-3 text-gray-400 mx-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+							<span id="breadcrumb-title" class="text-gray-400 font-medium truncate max-w-[180px] sm:max-w-xs">Solusi Praktis Speedtest WAN MikroTik Menggunakan Public Server</span>
+						</div>
+					</li>
+				</ol>
+			</nav>
+
+			<!-- 1. JUDUL UTAMA ARTIKEL -->
+			<h1 id="article-title" class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight sm:leading-snug mb-3">
+				Solusi Praktis Speedtest WAN MikroTik Menggunakan Public Server
+			</h1>
+
+			<!-- 2. METADATA (PENULIS & TANGGAL) -->
+			<div class="text-xs text-gray-500 font-medium mb-3">
+				Al Ikhsan Nahdillah Muis Malik / <span id="article-date">26 Agustus 2026</span>
+			</div>
+
+			<!-- 3. BADGE TAGS / KATEGORI -->
+			<div id="tags-container" class="mb-4 flex flex-wrap gap-2 ">
+				<a href="/tags.html?tag=Mikrotik" class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-900 text-xs font-medium px-3 py-1 rounded-md transition">Mikrotik</a>
+				<a href="/tags.html?tag=Speedtest" class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-900 text-xs font-medium px-3 py-1 rounded-md transition">Speedtest</a>
+			</div>
+
+			<!-- TOMBOL SHARE ATAS -->
+			<div class="flex items-center gap-2 mb-8 py-3 border-y border-gray-100">
+				<span class="text-xs font-semibold text-gray-500 mr-1">Bagikan:</span>
+				<a id="share-top-wa" href="https://api.whatsapp.com/send?text=Solusi%20Praktis%20Speedtest%20WAN%20MikroTik%20Menggunakan%20Public%20Server%20https%3A%2F%2Fikhsannahdillah.github.io%2Farticles%2Fsolusi-praktis-speedtest-wan-mikrotik-menggunakan-public-server.html" target="_blank" rel="noopener noreferrer" title="Bagikan ke WhatsApp" class="p-1.5 rounded-lg text-gray-500 hover:text-green-600 hover:bg-green-50 transition">
+					<svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+				</a>
+				<a id="share-top-twitter" href="https://twitter.com/intent/tweet?text=Solusi%20Praktis%20Speedtest%20WAN%20MikroTik%20Menggunakan%20Public%20Server&url=https%3A%2F%2Fikhsannahdillah.github.io%2Farticles%2Fsolusi-praktis-speedtest-wan-mikrotik-menggunakan-public-server.html" target="_blank" rel="noopener noreferrer" title="Bagikan ke X (Twitter)" class="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition">
+					<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+				</a>
+				<a id="share-top-fb" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fikhsannahdillah.github.io%2Farticles%2Fsolusi-praktis-speedtest-wan-mikrotik-menggunakan-public-server.html" target="_blank" rel="noopener noreferrer" title="Bagikan ke Facebook" class="p-1.5 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition">
+					<svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+				</a>
+				<a id="share-top-linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fikhsannahdillah.github.io%2Farticles%2Fsolusi-praktis-speedtest-wan-mikrotik-menggunakan-public-server.html" target="_blank" rel="noopener noreferrer" title="Bagikan ke LinkedIn" class="p-1.5 rounded-lg text-gray-500 hover:text-blue-700 hover:bg-blue-50 transition">
+					<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+				</a>
+			</div>
+
+			<!-- 4. GAMBAR UTAMA (FEATURED IMAGE) -->
+			<div id="cover-container" class="mb-8 ">
+				<img 
+					id="article-cover" 
+					src="/assets/img/artikel/speedtest-header.jpg" 
+					alt="Solusi Praktis Speedtest WAN MikroTik Menggunakan Public Server" 
+					class="w-full h-auto rounded-xl object-cover max-h-[450px] shadow-sm"
+				>
+			</div>
+
+			<!-- 5. KONTEN UTAMA ARTIKEL -->
+			<div id="article-content" class="prose prose-lg max-w-none text-gray-800 leading-relaxed font-normal space-y-4">
+				<p>Pernahkah Anda perlu mengecek kecepatan koneksi internet pada perangkat MikroTik yang lokasinya jauh dari Anda? Biasanya, kita berpikir harus datang langsung ke lokasi atau terhubung ke jaringan lokalnya untuk melakukan <em>speedtest via perangkat endpoint user</em>. Padahal, MikroTik sudah menyediakan fitur bawaan yang memungkinkan kita melakukan uji kecepatan secara <em>remote</em> tanpa perlu hadir langsung ke lokasi.</p><p><br></p><p>Caranya adalah dengan memanfaatkan fitur <strong>Speedtest Mikrotik</strong>. Untuk menggunakan fitur ini, kita membutuhkan BTest Server Public atau Bandwidth Test Server Public .Server-server publik ini disediakan dan dibagikan secara gratis oleh komunitas ISP untuk membantu para pengelola jaringan. Salah satu server yang bisa Anda gunakan adalah milik Alagas Network dengan detail rincian akses sebagai berikut:</p><p><br></p><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><strong>Address:</strong> <code>mikrotik.speedtest.alagas.net</code></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><strong>User:</strong> <code>speedtest</code></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><strong>Password:</strong> <code>MikroTikSG</code></li></ol><p><br></p><p>Untuk mulai melakukan pengujian, Anda bisa mengikuti langkah-langkah praktis berikut:</p><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Buka menu <strong>Terminal</strong> di WinBox/MikroTik Anda, lalu jalankan perintah </li></ol><p>		  <code>ping mikrotik.speedtest.alagas.net count=4</code> </p><p>		  untuk mendapatkan IP Host BTest server tersebut.</p><div class="custom-image-container" data-align="center">
+                    
+                    <img src="/assets/img/artikel/speedtest-ping.png">
+                    
+                </div><p><br></p><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Buka menu <strong>Tools</strong> &gt; <strong>Speed Test. </strong></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Masukkan IP Host yang Anda dapatkan dari hasil <em>ping</em> tadi ke kolom <strong>Address</strong>.</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Masukkan <strong>User</strong> dan <strong>Password</strong> sesuai parameter di atas.</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Klik <strong>Start</strong> untuk memulai pengujian, tunggu hingga status berubah menjadi Done dan perhatikan hasil <em>throughput</em> yang muncul.</li></ol><div class="custom-image-container" data-align="center">
+                    
+                    <img src="/assets/img/artikel/speedtest-done.png">
+                    
+                </div><p><br></p><p>Contoh untuk hasil speedtest saya Kecepatan unduh maksimal yang berhasil dicapai menggunakan protokol TCP adalah 172 Mbps dan kecepatan unggah maksimal yang berhasil dicapai menggunakan protokol TCP adalah 58.1 Mbps.</p><p><br></p><p><strong>Hal Penting Yang Perlu Di Perhatikan Saat Menggunakan Server Publik</strong></p><ol><li data-list="ordered"><span class="ql-ui" contenteditable="false"></span>Karena server-server BTest di internet dikelola secara mandiri oleh sukarelawan, pastikan untuk selalu menjaga etika penggunaan. Batasi pengujian maksimal 10–30 detik per sesi agar server tidak kelebihan beban dan IP Anda tidak terdeteksi sebagai serangan DDoS. </li><li data-list="ordered"><span class="ql-ui" contenteditable="false"></span>Perlu diingat juga bahwa server publik bisa mengalami <em>downtime</em> atau ditutup sewaktu-waktu, seperti server legendaris milik TomjNorthIdaho (<code>207.32.195.2</code>) yang kini sudah <em>offline</em> permanen akibat <em>overload</em>. </li><li data-list="ordered"><span class="ql-ui" contenteditable="false"></span>Gunakan secara bijak agar fasilitas publik ini bisa terus dinikmati oleh komunitas.</li></ol>
+			</div>
+
+		</article>
+	</main>
+
+	<!-- FOOTER (PERMANEN) -->
+	<footer id="site-footer" class="max-w-2xl w-full mx-auto px-6 py-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500"></footer>
+
+	<!-- SCRIPT MEMUAT COMPONENT HEADER & FOOTER -->
+	<script>
+		function loadComponents() {
+			const isSubfolder = window.location.pathname.includes('/articles/');
+			const basePath = isSubfolder ? '../' : './';
+
+			const headerEl = document.getElementById('site-header');
+			if (headerEl && !headerEl.innerHTML.trim()) {
+				fetch(basePath + 'components/header.html')
+					.then(res => res.text())
+					.then(html => {
+						headerEl.innerHTML = html;
+						if (isSubfolder) {
+							headerEl.querySelectorAll('a[href]').forEach(a => {
+								const href = a.getAttribute('href');
+								if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('/')) {
+									a.setAttribute('href', '../' + href);
+								}
+							});
+							headerEl.querySelectorAll('img[src]').forEach(img => {
+								const src = img.getAttribute('src');
+								if (src && !src.startsWith('http') && !src.startsWith('data:') && !src.startsWith('/')) {
+									img.setAttribute('src', '../' + src);
+								}
+							});
+						}
+					})
+					.catch(err => console.error('Gagal memuat header:', err));
+			}
+
+			const footerEl = document.getElementById('site-footer');
+			if (footerEl && !footerEl.innerHTML.trim()) {
+				fetch(basePath + 'components/footer.html')
+					.then(res => res.text())
+					.then(html => {
+						footerEl.innerHTML = html;
+						if (isSubfolder) {
+							footerEl.querySelectorAll('a[href]').forEach(a => {
+								const href = a.getAttribute('href');
+								if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('/')) {
+									a.setAttribute('href', '../' + href);
+								}
+							});
+						}
+					})
+					.catch(err => console.error('Gagal memuat footer:', err));
+			}
+		}
+
+		document.addEventListener("DOMContentLoaded", loadComponents);
+	</script>
+
+	<!-- INISIALISASI SWUP -->
+	<script>
+		if (typeof Swup !== 'undefined') {
+			const swup = new Swup({
+				plugins: [
+					new SwupScriptsPlugin(),
+					new SwupHeadPlugin({
+						awaitAssets: true
+					})
+				]
+			});
+
+			swup.hooks.on('page:view', () => {
+				loadComponents();
+			});
+		}
+	</script>
+
+</body>
+</html>
