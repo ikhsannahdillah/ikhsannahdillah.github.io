@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor Artikel HTML - Static Generator</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Stylesheet Tambahan & Perbaikan CSS Reset Tailwind -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Custom Styling Editor Surface */
+        .editor-content {
+            min-height: 400px;
+            outline: none;
+        }
+
+        /* Styling Container Gambar */
+        .custom-image-container {
+            position: relative;
+            max-width: 100%;
+            margin: 1.5rem 0;
+            clear: both;
+        }
+        .custom-image-container img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.75rem;
+        }
+        .custom-image-container[data-align="left"] { display: block; text-align: left; }
+        .custom-image-container[data-align="left"] img { margin-right: auto; margin-left: 0; }
+        .custom-image-container[data-align="center"] { display: block; text-align: center; }
+        .custom-image-container[data-align="center"] img { margin-left: auto; margin-right: auto; }
+        .custom-image-container[data-align="right"] { display: block; text-align: right; }
+        .custom-image-container[data-align="right"] img { margin-left: auto; margin-right: 0; }
+
+        /* PERBAIKAN STYLING NUMBERING & BULLETS UNTUK TAILWIND CSS RESET */
+        #editor-surface ul, #article-content ul {
+            list-style-type: disc !important;
+            padding-left: 1.5rem !important;
+            margin-top: 0.75rem !important;
+            margin-bottom: 0.75rem !important;
+        }
+        #editor-surface ol, #article-content ol {
+            list-style-type: decimal !important;
+            padding-left: 1.5rem !important;
+            margin-top: 0.75rem !important;
+            margin-bottom: 0.75rem !important;
+        }
+        #editor-surface li, #article-content li {
+            margin-top: 0.25rem !important;
+            margin-bottom: 0.25rem !important;
+        }
+        #editor-surface blockquote, #article-content blockquote {
+            border-left: 4px solid #e5e7eb;
+            padding-left: 1rem;
+            font-style: italic;
+            color: #4b5563;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased min-h-screen">
+
+    <!-- NAVIGATION HEADER -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <h1 class="text-lg font-bold text-gray-900">Artikel Static HTML Generator</h1>
+            <div class="flex items-center gap-3">
+                <button id="btn-export-html" class="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-4 py-2 rounded-lg transition shadow-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Ekspor HTML Statis
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTAINER UTAMA -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- PANEL KIRI: FORM & EDITOR (8 COLUMNS) -->
+            <div class="lg:col-span-8 space-y-6">
+                
+                <!-- METADATA FORM CARD -->
+                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                    <h2 class="text-md font-semibold text-gray-900 mb-2">Informasi Metadata Artikel</h2>
+                    
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Judul Artikel</label>
+                        <input type="text" id="article-title-input" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Masukkan judul artikel...">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">Slug URL</label>
+                            <input type="text" id="article-slug-input" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="judul-artikel-anda">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">Tanggal Publikasi</label>
+                            <input type="date" id="article-date" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">URL Cover / Featured Image</label>
+                        <input type="text" id="article-cover-input" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="/assets/img/cover-sample.jpg">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Ringkasan (Excerpt / Meta Description)</label>
+                        <textarea id="article-excerpt-input" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tuliskan ringkasan singkat..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Tags (Pisahkan dengan koma)</label>
+                        <input type="text" id="article-tags-input" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Opini, Teknologi, Tutorial">
+                    </div>
+                </div>
+
+                <!-- EDITOR TOOLBAR & SURFACE -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    
+                    <!-- TOOLBAR EDITOR -->
+                    <div class="p-3 border-b border-gray-200 bg-gray-50 flex flex-wrap gap-2 items-center">
+                        <button type="button" onclick="execCmd('bold')" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs font-bold hover:bg-gray-100">B</button>
+                        <button type="button" onclick="execCmd('italic')" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs italic hover:bg-gray-100">I</button>
+                        <button type="button" onclick="execCmd('underline')" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs underline hover:bg-gray-100">U</button>
+                        <span class="border-r border-gray-300 h-5 my-auto"></span>
+                        <button type="button" onclick="execCmd('formatBlock', '<h2>')" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs font-bold hover:bg-gray-100">H2</button>
+                        <button type="button" onclick="execCmd('formatBlock', '<h3>')" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs font-bold hover:bg-gray-100">H3</button>
+                        <span class="border-r border-gray-300 h-5 my-auto"></span>
+                        <button type="button" onclick="execCmd('insertUnorderedList')" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs hover:bg-gray-100">• Bullet List</button>
+                        <button type="button" onclick="execCmd('insertOrderedList')" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs hover:bg-gray-100">1. Number List</button>
+                        <button type="button" onclick="execCmd('formatBlock', '<blockquote>')" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs hover:bg-gray-100">Quote</button>
+                        <span class="border-r border-gray-300 h-5 my-auto"></span>
+                        <button type="button" onclick="insertLink()" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs hover:bg-gray-100">Link</button>
+                        <button type="button" onclick="insertImage()" class="px-3 py-1 bg-white border border-gray-300 rounded text-xs hover:bg-gray-100">Sisipkan Gambar</button>
+                    </div>
+
+                    <!-- AREA EDITOR EDITABLE -->
+                    <div id="editor-surface" contenteditable="true" class="p-6 editor-content prose max-w-none text-gray-800 focus:outline-none">
+                        <p>Tuliskan artikel Anda di sini...</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- PANEL KANAN: INFORMASI & PETUNJUK (4 COLUMNS) -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-3">
+                    <h3 class="text-sm font-bold text-gray-900">Petunjuk Penggunaan</h3>
+                    <ul class="text-xs text-gray-600 space-y-2 list-disc pl-4">
+                        <li>Isi judul, slug, dan metadata artikel pada panel sebelah kiri.</li>
+                        <li>Gunakan tombol toolbar di atas area teks untuk menambahkan list, tebal, miring, atau heading.</li>
+                        <li>Klik <strong>Ekspor HTML Statis</strong> untuk mengunduh berkas `.html` yang siap diunggah ke repositori GitHub Pages/Hosting Anda.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- LOGIKA JAVASCRIPT -->
+    <script>
+        // DOM Elements
+        const titleInput = document.getElementById('article-title-input');
+        const slugInput = document.getElementById('article-slug-input');
+        const coverInput = document.getElementById('article-cover-input');
+        const excerptInput = document.getElementById('article-excerpt-input');
+        const tagsInput = document.getElementById('article-tags-input');
+        const editorSurface = document.getElementById('editor-surface');
+        const btnExportHtml = document.getElementById('btn-export-html');
+
+        // Auto Generate Slug saat Judul diisi
+        titleInput.addEventListener('input', () => {
+            const slug = titleInput.value
+                .toLowerCase()
+                .replace(/[^a-z0-9 -]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-');
+            slugInput.value = slug;
+        });
+
+        // Set default date hari ini
+        document.getElementById('article-date').valueAsDate = new Date();
+
+        // Helper Command Editor
+        function execCmd(command, value = null) {
+            document.execCommand(command, false, value);
+        }
+
+        // Helper Link
+        function insertLink() {
+            const url = prompt('Masukkan URL Link:');
+            if (url) {
+                document.execCommand('createLink', false, url);
+            }
+        }
+
+        // Helper Gambar
+        function insertImage() {
+            const url = prompt('Masukkan URL Gambar:');
+            if (url) {
+                const imgHtml = `<div class="custom-image-container" data-align="center"><img src="${url}" alt="Gambar Artikel" /></div>`;
+                document.execCommand('insertHTML', false, imgHtml);
+            }
+        }
+
+        // Format Tanggal Indonesia
+        function formatTanggalIndo(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+
+        // Membersihkan Konten sebelum Diekspor
+        function getCleanedContent() {
+            return editorSurface.innerHTML;
+        }
+
+        // =========================================================
+        // GENERATE & EKSPOR HTML STATIS
+        // =========================================================
+        btnExportHtml.addEventListener('click', () => {
+            const title = titleInput.value.trim();
+            if (!title) return alert('Silakan masukkan judul artikel terlebih dahulu!');
+
+            const slug = slugInput.value;
+            const rawDate = document.getElementById('article-date').value;
+            const formattedDate = formatTanggalIndo(rawDate);
+            const excerpt = excerptInput.value.trim() || title;
+            
+            let coverPath = coverInput.value.trim() || '/assets/img/og-image.jpg';
+            if (!coverPath.startsWith('/') && !coverPath.startsWith('http')) {
+                coverPath = '/' + coverPath;
+            }
+
+            const rawTags = tagsInput.value.split(',').map(t => t.trim()).filter(t => t.length > 0);
+            const tagsHtml = rawTags.map(tag => 
+                `<a href="/tags.html?tag=${encodeURIComponent(tag)}" class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-900 text-xs font-medium px-3 py-1 rounded-md transition">${tag}</a>`
+            ).join('\n\t\t\t\t');
+
+            const fullTitle = `${title} - Catatan Al Ikhsan Nahdillah Muis Malik`;
+            const articleUrl = `https://ikhsannahdillah.github.io/articles/${slug}.html`;
+            const fullOgImage = coverPath.startsWith('http') ? coverPath : `https://ikhsannahdillah.github.io${coverPath}`;
+            const cleanedContent = getCleanedContent();
+
+            const schemaData = {
+                "@context": "https://schema.org",
+                "@type": "BlogPosting",
+                "mainEntityOfPage": {
+                    "@type": "WebPage",
+                    "@id": articleUrl
+                },
+                "headline": title,
+                "description": excerpt,
+                "image": fullOgImage,  
+                "author": {
+                    "@type": "Person",
+                    "name": "Al Ikhsan Nahdillah Muis Malik",
+                    "url": "https://ikhsannahdillah.github.io/about.html"
+                },
+                "publisher": {
+                    "@type": "Person",
+                    "name": "Al Ikhsan Nahdillah Muis Malik"
+                },
+                "datePublished": rawDate,
+                "dateModified": rawDate
+            };
+
+            const fullStaticHtml = `<!DOCTYPE html>
+<html lang="id">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<!-- Primary Meta Tags -->
+	<title id="meta-title">${fullTitle}</title>
+	<meta name="title" id="meta-title-tag" content="${fullTitle}">
+	<meta name="description" id="meta-desc" content="${excerpt}">
+	<meta name="keywords" id="meta-keywords" content="${rawTags.join(', ')}">
+	<meta name="author" content="Al Ikhsan Nahdillah Muis Malik">
+	<meta name="robots" content="index, follow, max-image-preview:large">
+
+	<!-- Open Graph / Facebook / WhatsApp -->
+	<meta property="og:type" content="article">
+	<meta property="og:url" id="og-url" content="${articleUrl}">
+	<meta property="og:title" id="og-title" content="${fullTitle}">
+	<meta property="og:description" id="og-desc" content="${excerpt}">
+	<meta property="og:image" id="og-image" content="${fullOgImage}">
+	<meta property="article:published_time" id="og-time" content="${rawDate}">
+	<meta property="article:author" content="Al Ikhsan Nahdillah Muis Malik">
+
+	<!-- Twitter -->
+	<meta property="twitter:card" content="summary_large_image">
+	<meta property="twitter:url" id="twitter-url" content="${articleUrl}">
+	<meta property="twitter:title" id="twitter-title" content="${fullTitle}">
+	<meta property="twitter:description" id="twitter-desc" content="${excerpt}">
+	<meta property="twitter:image" id="twitter-image" content="${fullOgImage}">
+
+	<!-- Canonical URL -->
+	<link rel="canonical" id="canonical-url" href="${articleUrl}">
+
+	<!-- Schema.org JSON-LD -->
+	<script type="application/ld+json" id="schema-json">
+${JSON.stringify(schemaData, null, 2)}
+	<\/script>
+
+	<script src="https://cdn.tailwindcss.com"><\/script>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+	
+	<style>
+		body { font-family: 'Inter', sans-serif; }
+		.transition-fade {
+			transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+			opacity: 1;
+			transform: translateY(0);
+		}
+		html.is-animating .transition-fade {
+			opacity: 0;
+			transform: translateY(4px);
+		}
+
+		.custom-image-container {
+			position: relative;
+			max-width: 100%;
+			margin: 1.5rem 0;
+			clear: both;
+		}
+		.custom-image-container img {
+			display: block;
+			max-width: 100%;
+			height: auto;
+			border-radius: 0.75rem;
+		}
+
+		.custom-image-container[data-align="left"] { display: block; text-align: left; }
+		.custom-image-container[data-align="left"] img { margin-right: auto; margin-left: 0; }
+		.custom-image-container[data-align="center"] { display: block; text-align: center; }
+		.custom-image-container[data-align="center"] img { margin-left: auto; margin-right: auto; }
+		.custom-image-container[data-align="right"] { display: block; text-align: right; }
+		.custom-image-container[data-align="right"] img { margin-left: auto; margin-right: 0; }
+
+		/* FIX PERBAIKAN NUMBERING & BULLETS UNTUK TAILWIND CSS RESET */
+		#article-content ul {
+			list-style-type: disc !important;
+			padding-left: 1.5rem !important;
+			margin-top: 0.75rem !important;
+			margin-bottom: 0.75rem !important;
+		}
+		#article-content ol {
+			list-style-type: decimal !important;
+			padding-left: 1.5rem !important;
+			margin-top: 0.75rem !important;
+			margin-bottom: 0.75rem !important;
+		}
+		#article-content li {
+			margin-top: 0.25rem !important;
+			margin-bottom: 0.25rem !important;
+		}
+		#article-content blockquote {
+			border-left: 4px solid #e5e7eb;
+			padding-left: 1rem;
+			font-style: italic;
+			color: #4b5563;
+			margin: 1rem 0;
+		}
+	</style>
+
+	<!-- Swup & Plugins -->
+	<script src="https://unpkg.com/swup@4"><\/script>
+	<script src="https://unpkg.com/@swup/scripts-plugin@2"><\/script>
+	<script src="https://unpkg.com/@swup/head-plugin@2"><\/script>
+	
+	<link rel="icon" type="image/jpg" href="/assets/img/favicon.jpg">
+</head>
+<body class="bg-white text-gray-800 antialiased min-h-screen flex flex-col justify-between">
+
+	<!-- HEADER (PERMANEN) -->
+	<header id="site-header" class="max-w-2xl w-full mx-auto px-6 pt-10 pb-8 flex justify-between items-center"></header>
+
+	<!-- KONTAINER UTAMA ARTIKEL (DI DALAM #SWUP) -->
+	<main id="swup" class="transition-fade max-w-2xl w-full mx-auto px-6 py-4 flex-grow">
+		<article>
+			
+			<!-- BREADCRUMB -->
+			<nav class="flex text-xs text-gray-500 mb-6" aria-label="Breadcrumb">
+				<ol class="inline-flex items-center space-x-1 md:space-x-2 flex-wrap">
+					<li class="inline-flex items-center">
+						<a href="/index.html" class="hover:text-blue-600 transition-colors">Beranda</a>
+					</li>
+					<li>
+						<div class="flex items-center">
+							<svg class="w-3 h-3 text-gray-400 mx-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+							<a href="/articles.html" class="hover:text-blue-600 transition-colors">Tulisan</a>
+						</div>
+					</li>
+					<li aria-current="page">
+						<div class="flex items-center">
+							<svg class="w-3 h-3 text-gray-400 mx-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+							<span id="breadcrumb-title" class="text-gray-400 font-medium truncate max-w-[180px] sm:max-w-xs">${title}</span>
+						</div>
+					</li>
+				</ol>
+			</nav>
+
+			<!-- 1. JUDUL UTAMA ARTIKEL -->
+			<h1 id="article-title" class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight sm:leading-snug mb-3">
+				${title}
+			</h1>
+
+			<!-- 2. METADATA (PENULIS & TANGGAL) -->
+			<div class="text-xs text-gray-500 font-medium mb-3">
+				Al Ikhsan Nahdillah Muis Malik / <span id="article-date">${formattedDate}</span>
+			</div>
+
+			<!-- 3. BADGE TAGS / KATEGORI -->
+			<div id="tags-container" class="mb-4 flex flex-wrap gap-2 ${rawTags.length ? '' : 'hidden'}">
+				${tagsHtml}
+			</div>
+
+			<!-- TOMBOL SHARE ATAS -->
+			<div class="flex items-center gap-2 mb-8 py-3 border-y border-gray-100">
+				<span class="text-xs font-semibold text-gray-500 mr-1">Bagikan:</span>
+				<a id="share-top-wa" href="https://api.whatsapp.com/send?text=${encodeURIComponent(title)}%20${encodeURIComponent(articleUrl)}" target="_blank" rel="noopener noreferrer" title="Bagikan ke WhatsApp" class="p-1.5 rounded-lg text-gray-500 hover:text-green-600 hover:bg-green-50 transition">
+					<svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+				</a>
+				<a id="share-top-twitter" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(articleUrl)}" target="_blank" rel="noopener noreferrer" title="Bagikan ke X (Twitter)" class="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition">
+					<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+				</a>
+				<a id="share-top-fb" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}" target="_blank" rel="noopener noreferrer" title="Bagikan ke Facebook" class="p-1.5 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition">
+					<svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+				</a>
+				<a id="share-top-linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleUrl)}" target="_blank" rel="noopener noreferrer" title="Bagikan ke LinkedIn" class="p-1.5 rounded-lg text-gray-500 hover:text-blue-700 hover:bg-blue-50 transition">
+					<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+				</a>
+			</div>
+
+			<!-- 4. GAMBAR UTAMA (FEATURED IMAGE) -->
+			<div id="cover-container" class="mb-8 ${coverPath ? '' : 'hidden'}">
+				<img 
+					id="article-cover" 
+					src="${coverPath}" 
+					alt="${title}" 
+					class="w-full h-auto rounded-xl object-cover max-h-[450px] shadow-sm"
+				>
+			</div>
+
+			<!-- 5. KONTEN UTAMA ARTIKEL -->
+			<div id="article-content" class="prose prose-lg max-w-none text-gray-800 leading-relaxed font-normal space-y-4">
+				${cleanedContent}
+			</div>
+
+		</article>
+	</main>
+
+	<!-- FOOTER (PERMANEN) -->
+	<footer id="site-footer" class="max-w-2xl w-full mx-auto px-6 py-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500"></footer>
+
+	<!-- SCRIPT MEMUAT COMPONENT HEADER & FOOTER -->
+	<script>
+		function loadComponents() {
+			const isSubfolder = window.location.pathname.includes('/articles/');
+			const basePath = isSubfolder ? '../' : './';
+
+			const headerEl = document.getElementById('site-header');
+			if (headerEl && !headerEl.innerHTML.trim()) {
+				fetch(basePath + 'components/header.html')
+					.then(res => res.text())
+					.then(html => {
+						headerEl.innerHTML = html;
+						if (isSubfolder) {
+							headerEl.querySelectorAll('a[href]').forEach(a => {
+								const href = a.getAttribute('href');
+								if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('/')) {
+									a.setAttribute('href', '../' + href);
+								}
+							});
+							headerEl.querySelectorAll('img[src]').forEach(img => {
+								const src = img.getAttribute('src');
+								if (src && !src.startsWith('http') && !src.startsWith('data:') && !src.startsWith('/')) {
+									img.setAttribute('src', '../' + src);
+								}
+							});
+						}
+					})
+					.catch(err => console.error('Gagal memuat header:', err));
+			}
+
+			const footerEl = document.getElementById('site-footer');
+			if (footerEl && !footerEl.innerHTML.trim()) {
+				fetch(basePath + 'components/footer.html')
+					.then(res => res.text())
+					.then(html => {
+						footerEl.innerHTML = html;
+						if (isSubfolder) {
+							footerEl.querySelectorAll('a[href]').forEach(a => {
+								const href = a.getAttribute('href');
+								if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('/')) {
+									a.setAttribute('href', '../' + href);
+								}
+							});
+						}
+					})
+					.catch(err => console.error('Gagal memuat footer:', err));
+			}
+		}
+
+		document.addEventListener("DOMContentLoaded", loadComponents);
+	<\/script>
+
+	<!-- INISIALISASI SWUP -->
+	<script>
+		if (typeof Swup !== 'undefined') {
+			const swup = new Swup({
+				plugins: [
+					new SwupScriptsPlugin(),
+					new SwupHeadPlugin({
+						awaitAssets: true
+					})
+				]
+			});
+
+			swup.hooks.on('page:view', () => {
+				loadComponents();
+			});
+		}
+	<\/script>
+
+</body>
+</html>`;
+
+            const blob = new Blob([fullStaticHtml], { type: 'text/html;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${slug}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+</html>
