@@ -45,5 +45,17 @@
 	  ],
 	  "cover": "/assets/img/artikel/tomba-header.jpg",
 	  "excerpt": "Pelatihan Desain Grafis yang diadakan oleh Kantor Kelurahan Tomba, Kota Baubau. Pelatihan ini diikuti sekitar 20 peserta dari masyarakat setempat dengan latar belakang yang beragam"
+	},
+	{
+	  "title": "Solusi Praktis Speedtest WAN MikroTik Menggunakan Public Server",
+	  "slug": "/articles/solusi-praktis-speedtest-wan-mikrotik-menggunakan-public-server.html",
+	  "url": "/articles/solusi-praktis-speedtest-wan-mikrotik-menggunakan-public-server.html",
+	  "date": "2026-08-26",
+	  "tags": [
+	    "Mikrotik",
+	    "Speedtest"
+	  ],
+	  "cover": "/assets/img/artikel/speedtest-header.jpg",
+	  "excerpt": "Server-server publik ini disediakan dan dibagikan secara gratis oleh komunitas ISP untuk membantu para pengelola jaringan. Salah satu server yang bisa Anda gunakan adalah milik..."
 	}
 ]
