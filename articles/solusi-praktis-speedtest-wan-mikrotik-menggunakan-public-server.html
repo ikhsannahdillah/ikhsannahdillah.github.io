@@ -91,6 +91,23 @@
 		.custom-image-container[data-align="center"] img { margin-left: auto; margin-right: auto; }
 		.custom-image-container[data-align="right"] { display: block; text-align: right; }
 		.custom-image-container[data-align="right"] img { margin-left: auto; margin-right: 0; }
+
+		/* Style pengembali Bullet & Numbering yang di-reset Tailwind */
+		#article-content ul {
+			list-style-type: disc !important;
+			padding-left: 1.5rem !important;
+			margin-top: 0.5rem;
+			margin-bottom: 0.5rem;
+		}
+		#article-content ol {
+			list-style-type: decimal !important;
+			padding-left: 1.5rem !important;
+			margin-top: 0.5rem;
+			margin-bottom: 0.5rem;
+		}
+		#article-content li {
+			margin-bottom: 0.25rem;
+		}
 	</style>
 
 	<!-- Swup & Plugins -->
@@ -175,15 +192,46 @@
 
 			<!-- 5. KONTEN UTAMA ARTIKEL -->
 			<div id="article-content" class="prose prose-lg max-w-none text-gray-800 leading-relaxed font-normal space-y-4">
-				<p>Pernahkah Anda perlu mengecek kecepatan koneksi internet pada perangkat MikroTik yang lokasinya jauh dari Anda? Biasanya, kita berpikir harus datang langsung ke lokasi atau terhubung ke jaringan lokalnya untuk melakukan <em>speedtest via perangkat endpoint user</em>. Padahal, MikroTik sudah menyediakan fitur bawaan yang memungkinkan kita melakukan uji kecepatan secara <em>remote</em> tanpa perlu hadir langsung ke lokasi.</p><p><br></p><p>Caranya adalah dengan memanfaatkan fitur <strong>Speedtest Mikrotik</strong>. Untuk menggunakan fitur ini, kita membutuhkan BTest Server Public atau Bandwidth Test Server Public .Server-server publik ini disediakan dan dibagikan secara gratis oleh komunitas ISP untuk membantu para pengelola jaringan. Salah satu server yang bisa Anda gunakan adalah milik Alagas Network dengan detail rincian akses sebagai berikut:</p><p><br></p><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><strong>Address:</strong> <code>mikrotik.speedtest.alagas.net</code></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><strong>User:</strong> <code>speedtest</code></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><strong>Password:</strong> <code>MikroTikSG</code></li></ol><p><br></p><p>Untuk mulai melakukan pengujian, Anda bisa mengikuti langkah-langkah praktis berikut:</p><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Buka menu <strong>Terminal</strong> di WinBox/MikroTik Anda, lalu jalankan perintah </li></ol><p>		  <code>ping mikrotik.speedtest.alagas.net count=4</code> </p><p>		  untuk mendapatkan IP Host BTest server tersebut.</p><div class="custom-image-container" data-align="center">
-                    
-                    <img src="/assets/img/artikel/speedtest-ping.png">
-                    
-                </div><p><br></p><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Buka menu <strong>Tools</strong> &gt; <strong>Speed Test. </strong></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Masukkan IP Host yang Anda dapatkan dari hasil <em>ping</em> tadi ke kolom <strong>Address</strong>.</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Masukkan <strong>User</strong> dan <strong>Password</strong> sesuai parameter di atas.</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Klik <strong>Start</strong> untuk memulai pengujian, tunggu hingga status berubah menjadi Done dan perhatikan hasil <em>throughput</em> yang muncul.</li></ol><div class="custom-image-container" data-align="center">
-                    
-                    <img src="/assets/img/artikel/speedtest-done.png">
-                    
-                </div><p><br></p><p>Contoh untuk hasil speedtest saya Kecepatan unduh maksimal yang berhasil dicapai menggunakan protokol TCP adalah 172 Mbps dan kecepatan unggah maksimal yang berhasil dicapai menggunakan protokol TCP adalah 58.1 Mbps.</p><p><br></p><p><strong>Hal Penting Yang Perlu Di Perhatikan Saat Menggunakan Server Publik</strong></p><ol><li data-list="ordered"><span class="ql-ui" contenteditable="false"></span>Karena server-server BTest di internet dikelola secara mandiri oleh sukarelawan, pastikan untuk selalu menjaga etika penggunaan. Batasi pengujian maksimal 10–30 detik per sesi agar server tidak kelebihan beban dan IP Anda tidak terdeteksi sebagai serangan DDoS. </li><li data-list="ordered"><span class="ql-ui" contenteditable="false"></span>Perlu diingat juga bahwa server publik bisa mengalami <em>downtime</em> atau ditutup sewaktu-waktu, seperti server legendaris milik TomjNorthIdaho (<code>207.32.195.2</code>) yang kini sudah <em>offline</em> permanen akibat <em>overload</em>. </li><li data-list="ordered"><span class="ql-ui" contenteditable="false"></span>Gunakan secara bijak agar fasilitas publik ini bisa terus dinikmati oleh komunitas.</li></ol>
+				<p>Pernahkah Anda perlu mengecek kecepatan koneksi internet pada perangkat MikroTik yang lokasinya jauh dari Anda? Biasanya, kita berpikir harus datang langsung ke lokasi atau terhubung ke jaringan lokalnya untuk melakukan <em>speedtest via perangkat endpoint user</em>. Padahal, MikroTik sudah menyediakan fitur bawaan yang memungkinkan kita melakukan uji kecepatan secara <em>remote</em> tanpa perlu hadir langsung ke lokasi.</p>
+				
+				<p>Caranya adalah dengan memanfaatkan fitur <strong>Speedtest Mikrotik</strong>. Untuk menggunakan fitur ini, kita membutuhkan BTest Server Public atau Bandwidth Test Server Public .Server-server publik ini disediakan dan dibagikan secara gratis oleh komunitas ISP untuk membantu para pengelola jaringan. Salah satu server yang bisa Anda gunakan adalah milik Alagas Network dengan detail rincian akses sebagai berikut:</p>
+
+				<ul>
+					<li><strong>Address:</strong> <code>mikrotik.speedtest.alagas.net</code></li>
+					<li><strong>User:</strong> <code>speedtest</code></li>
+					<li><strong>Password:</strong> <code>MikroTikSG</code></li>
+				</ul>
+
+				<p>Untuk mulai melakukan pengujian, Anda bisa mengikuti langkah-langkah praktis berikut:</p>
+
+				<ol>
+					<li>Buka menu <strong>Terminal</strong> di WinBox/MikroTik Anda, lalu jalankan perintah <code>ping mikrotik.speedtest.alagas.net count=4</code> untuk mendapatkan IP Host BTest server tersebut.</li>
+				</ol>
+
+				<div class="custom-image-container" data-align="center">
+					<img src="/assets/img/artikel/speedtest-ping.png" alt="Ping Speedtest">
+				</div>
+
+				<ol start="2">
+					<li>Buka menu <strong>Tools</strong> &gt; <strong>Speed Test.</strong></li>
+					<li>Masukkan IP Host yang Anda dapatkan dari hasil <em>ping</em> tadi ke kolom <strong>Address</strong>.</li>
+					<li>Masukkan <strong>User</strong> dan <strong>Password</strong> sesuai parameter di atas.</li>
+					<li>Klik <strong>Start</strong> untuk memulai pengujian, tunggu hingga status berubah menjadi Done dan perhatikan hasil <em>throughput</em> yang muncul.</li>
+				</ol>
+
+				<div class="custom-image-container" data-align="center">
+					<img src="/assets/img/artikel/speedtest-done.png" alt="Hasil Speedtest">
+				</div>
+
+				<p>Contoh untuk hasil speedtest saya Kecepatan unduh maksimal yang berhasil dicapai menggunakan protokol TCP adalah 172 Mbps dan kecepatan unggah maksimal yang berhasil dicapai menggunakan protokol TCP adalah 58.1 Mbps.</p>
+
+				<p><strong>Hal Penting Yang Perlu Di Perhatikan Saat Menggunakan Server Publik</strong></p>
+
+				<ol>
+					<li>Karena server-server BTest di internet dikelola secara mandiri oleh sukarelawan, pastikan untuk selalu menjaga etika penggunaan. Batasi pengujian maksimal 10–30 detik per sesi agar server tidak kelebihan beban dan IP Anda tidak terdeteksi sebagai serangan DDoS.</li>
+					<li>Perlu diingat juga bahwa server publik bisa mengalami <em>downtime</em> atau ditutup sewaktu-waktu, seperti server legendaris milik TomjNorthIdaho (<code>207.32.195.2</code>) yang kini sudah <em>offline</em> permanen akibat <em>overload</em>.</li>
+					<li>Gunakan secara bijak agar fasilitas publik ini bisa terus dinikmati oleh komunitas.</li>
+				</ol>
 			</div>
 
 		</article>
