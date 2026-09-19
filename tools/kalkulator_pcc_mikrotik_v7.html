@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Meta Tag SEO Utama -->
+    <title>Kalkulator Bandwidth PCC MikroTik v7 - Catatan Al Ikhsan Nahdillah Muis Malik</title>
+    <meta name="title" content="Kalkulator Bandwidth PCC MikroTik v7 - Catatan Al Ikhsan Nahdillah Muis Malik">
+    <meta name="description" content="Aplikasi kalkulator rasio bandwidth dan pembuat script konfigurasi PCC (Per Connection Classifier) Load Balancing otomatis untuk MikroTik RouterOS v7.">
+    <meta name="author" content="Al Ikhsan Nahdillah Muis Malik">
+
+    <!-- Open Graph (WhatsApp & Facebook Share) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Kalkulator Bandwidth PCC MikroTik v7 - Catatan Al Ikhsan Nahdillah Muis Malik">
+    <meta property="og:description" content="Kalkulator rasio PCC & generator script load balancing RouterOS v7.">
+    <meta property="og:image" content="https://ikhsannahdillah.github.io/assets/img/og-image.jpg">
+
+    <!-- Favicon (Root-Relative) -->
+    <link rel="icon" type="image/jpeg" href="https://ikhsannahdillah.github.io/assets/img/favicon.jpg">
+
+    <!-- Tailwind CSS & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'Fira Code', monospace; }
+        .transition-fade {
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        html.is-animating .transition-fade {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+    </style>
+
+    <!-- CDN Swup & Plugins Scripts -->
+    <script src="https://unpkg.com/swup@4"></script>
+    <script src="https://unpkg.com/@swup/scripts-plugin@2"></script>
+    <script src="https://unpkg.com/@swup/head-plugin@2"></script>
+</head>
+<body class="bg-white text-gray-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER KOSONG DENGAN ID (DILUAT LEWAT COMPONENT LOADER) -->
+    <header id="site-header" class="max-w-2xl w-full mx-auto px-6 pt-10 pb-8 flex justify-between items-center"></header>
+
+    <!-- KONTAINER UTAMA TOOLS (DI DALAM #SWUP) -->
+    <main id="swup" class="transition-fade max-w-2xl w-full mx-auto px-6 py-4 flex-grow">
+        <section class="space-y-6">
+            <!-- Judul Halaman -->
+            <div>
+                <span class="text-xs font-mono font-semibold text-blue-600 tracking-wider uppercase">Network Tools</span>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight mt-1">
+                    Kalkulator PCC MikroTik v7
+                </h1>
+                <p class="text-gray-600 text-sm sm:text-base leading-relaxed mt-2">
+                    Aplikasi kalkulator rasio bandwidth dan pembuat script konfigurasi <i>Per Connection Classifier</i> (PCC) Load Balancing otomatis untuk MikroTik RouterOS v7.
+                </p>
+            </div>
+
+            <!-- Form Kalkulator PCC -->
+            <div class="p-6 rounded-2xl border border-gray-200/80 bg-white shadow-sm space-y-6">
+                <h2 class="text-lg font-bold text-gray-900 border-b pb-3 border-gray-100 flex items-center justify-between">
+                    <span>Pengaturan Load Balancing</span>
+                    <span class="text-xs font-mono font-normal px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full">RouterOS v7 Valid</span>
+                </h2>
+
+                <form id="pcc-form" onsubmit="calculatePCC(event)" class="space-y-5">
+                    
+                    <!-- 1. Network / Local Setup -->
+                    <div class="bg-gray-50/70 p-4 rounded-xl border border-gray-200/60 space-y-3">
+                        <h3 class="text-xs font-mono font-bold uppercase text-gray-500 tracking-wider">1. Network & Local Setup</h3>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label for="lan-interface" class="block text-xs font-semibold text-gray-700 mb-1">
+                                    Interface LAN / Local
+                                </label>
+                                <input type="text" id="lan-interface" value="bridge-LAN" required
+                                    class="w-full px-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-gray-900 font-mono text-sm">
+                            </div>
+                            <div>
+                                <label for="lan-subnet" class="block text-xs font-semibold text-gray-700 mb-1">
+                                    Subnet Local LAN <span class="text-[10px] text-gray-400 font-normal">(Bypass List)</span>
+                                </label>
+                                <input type="text" id="lan-subnet" value="192.168.88.0/24" required
+                                    class="w-full px-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-gray-900 font-mono text-sm" placeholder="192.168.88.0/24">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="pcc-matcher" class="block text-xs font-semibold text-gray-700 mb-1">
+                                Classifier Matcher PCC
+                            </label>
+                            <select id="pcc-matcher" class="w-full px-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-gray-900 font-mono text-xs bg-white">
+                                <option value="both-addresses-and-ports" selected>both-addresses-and-ports (Rekomendasi Browsing/Game)</option>
+                                <option value="both-addresses">both-addresses (Aman untuk Internet Banking/Session)</option>
+                                <option value="src-address-and-port">src-address-and-port</option>
+                                <option value="src-address">src-address (Per IP Client)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 2. WAN / ISP List -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xs font-mono font-bold uppercase text-gray-500 tracking-wider">2. Daftar Interface WAN / ISP</h3>
+                            <button type="button" onclick="addWanRow()" class="px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 text-xs font-semibold rounded-lg transition flex items-center gap-1">
+                                + Tambah WAN
+                            </button>
+                        </div>
+
+                        <div id="wan-list-container" class="space-y-3">
+                            <!-- Dynamic WAN Items Rendered Here -->
+                        </div>
+                    </div>
+
+                    <!-- Preset Cepat -->
+                    <div class="pt-1 flex flex-wrap items-center gap-2 text-xs">
+                        <span class="text-gray-500 font-medium">Preset Rasio:</span>
+                        <button type="button" onclick="applyPreset('1:1')" class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-mono transition">2 WAN (1:1)</button>
+                        <button type="button" onclick="applyPreset('2:1')" class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-mono transition">2 WAN (2:1)</button>
+                        <button type="button" onclick="applyPreset('100:50:25')" class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-mono transition">3 WAN (4:2:1)</button>
+                    </div>
+
+                    <!-- Tombol Hitung & Generate -->
+                    <button type="submit" class="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition duration-150 shadow-sm active:scale-[0.99] flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        HITUNG & GENERATE SCRIPT
+                    </button>
+                </form>
+            </div>
+
+            <!-- Toast Notification Box -->
+            <div id="toast-msg" class="hidden p-3 rounded-xl bg-gray-900 text-white text-xs font-mono transition-all duration-200 flex items-center justify-between">
+                <span id="toast-text">Pesan notifikasi</span>
+                <button type="button" onclick="hideToast()" class="text-gray-400 hover:text-white">&times;</button>
+            </div>
+
+            <!-- Box Hasil Perhitungan & Script (Tampil Setelah Di-Submit) -->
+            <div id="result-box" class="hidden space-y-5">
+                
+                <!-- Breakdown Rasio -->
+                <div class="p-6 rounded-2xl border border-blue-100 bg-blue-50/50 space-y-4">
+                    <h3 class="text-base font-bold text-gray-900 font-mono border-b border-blue-100 pb-2 flex justify-between items-center">
+                        <span>Hasil Perhitungan Rasio PCC</span>
+                        <span id="gcd-badge" class="text-xs font-normal text-blue-700 bg-blue-100 px-2.5 py-0.5 rounded-full">FPB: -</span>
+                    </h3>
+
+                    <div class="grid grid-cols-2 gap-3 text-center">
+                        <div class="p-3 bg-white rounded-xl border border-blue-100/80 shadow-sm">
+                            <span class="text-xs font-mono text-gray-500 block">Total Bandwidth Combined</span>
+                            <span id="total-bw-display" class="text-lg font-extrabold text-blue-600 font-mono">0 Mbps</span>
+                        </div>
+                        <div class="p-3 bg-white rounded-xl border border-blue-100/80 shadow-sm">
+                            <span class="text-xs font-mono text-gray-500 block">Total Denominator PCC</span>
+                            <span id="total-parts-display" class="text-lg font-extrabold text-emerald-600 font-mono">0 Parts</span>
+                        </div>
+                    </div>
+
+                    <!-- Visual Progress Bar Load Distribution -->
+                    <div>
+                        <span class="text-xs font-semibold text-gray-700 block mb-1.5">Visualisasi Distribusi Load Traffic:</span>
+                        <div id="ratio-progress-bar" class="h-3.5 w-full bg-gray-200 rounded-full overflow-hidden flex border border-gray-300/60">
+                            <!-- Stacked Progress Bars -->
+                        </div>
+                    </div>
+
+                    <!-- Breakdown Detail Tiap WAN -->
+                    <div id="wan-breakdown-list" class="space-y-2 pt-1">
+                        <!-- Items rendered dynamically -->
+                    </div>
+                </div>
+
+                <!-- Box RouterOS v7 Script Output -->
+                <div class="p-6 rounded-2xl border border-gray-200/80 bg-white shadow-sm space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-3">
+                        <div>
+                            <h3 class="text-base font-bold text-gray-900 font-mono">Script RouterOS v7</h3>
+                            <p class="text-xs text-gray-500">Sintaks resmi ROS v7 dengan tabel routing terpisah</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="copyScript()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition shadow-sm active:scale-95 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+                                </svg>
+                                Salin Script
+                            </button>
+                            <button type="button" onclick="downloadScript()" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold border border-gray-200 transition active:scale-95 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                                Unduh (.rsc)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Textarea Code Box -->
+                    <div class="relative">
+                        <textarea id="script-textarea" readonly spellcheck="false"
+                            class="w-full h-80 bg-gray-900 text-emerald-400 font-mono text-xs p-4 rounded-xl outline-none resize-y selection:bg-blue-800 leading-relaxed"></textarea>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Catatan Kaki / Disclaimer -->
+            <div class="p-4 rounded-xl bg-gray-50 border border-gray-200/60 text-xs text-gray-600 leading-relaxed">
+                <span class="font-bold text-gray-800">Catatan Implementasi:</span> Sintaks di atas dirancang khusus untuk RouterOS v7. Pastikan nama interface WAN/LAN sesuai dengan nama di menu <i>/interface</i> MikroTik Anda. Untuk kebutuhan Port Forwarding / Remote Router, sertakan aturan Mangle Connection Mark pada chain <i>input/output</i>.
+            </div>
+        </section>
+
+        <!-- LOGIKA PERHITUNGAN DAN SCRIPT GENERATOR -->
+        <script>
+            // Skema Warna untuk visualisasi progres tiap ISP
+            const ISP_COLORS = [
+                { bg: 'bg-blue-500', text: 'text-blue-600', hex: '#3b82f6' },
+                { bg: 'bg-emerald-500', text: 'text-emerald-600', hex: '#10b981' },
+                { bg: 'bg-purple-500', text: 'text-purple-600', hex: '#8b5cf6' },
+                { bg: 'bg-amber-500', text: 'text-amber-600', hex: '#f59e0b' },
+                { bg: 'bg-rose-500', text: 'text-rose-600', hex: '#f43f5e' },
+                { bg: 'bg-indigo-500', text: 'text-indigo-600', hex: '#6366f1' }
+            ];
+
+            // State default WAN
+            let wanState = [
+                { id: 1, name: 'ether1-ISP1', speed: 50, gateway: '192.168.1.1' },
+                { id: 2, name: 'ether2-ISP2', speed: 100, gateway: '192.168.2.1' }
+            ];
+            let wanCounter = 3;
+
+            // Math Helper: Greatest Common Divisor (FPB)
+            function gcd(a, b) {
+                a = Math.abs(a);
+                b = Math.abs(b);
+                while (b) {
+                    let t = b;
+                    b = a % b;
+                    a = t;
+                }
+                return a;
+            }
+
+            function calculateArrayGCD(arr) {
+                if (!arr || arr.length === 0) return 1;
+                let result = arr[0];
+                for (let i = 1; i < arr.length; i++) {
+                    result = gcd(result, arr[i]);
+                }
+                return result || 1;
+            }
+
+            // Render Input Baris WAN Dinamis
+            function renderWanRows() {
+                const container = document.getElementById('wan-list-container');
+                container.innerHTML = '';
+
+                wanState.forEach((wan, idx) => {
+                    const color = ISP_COLORS[idx % ISP_COLORS.length];
+                    const card = document.createElement('div');
+                    card.className = 'p-3.5 rounded-xl border border-gray-200 bg-white shadow-sm space-y-2';
+
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between text-xs font-semibold">
+                            <span class="flex items-center gap-1.5 ${color.text}">
+                                <span class="w-2.5 h-2.5 rounded-full ${color.bg}"></span>
+                                ISP / WAN #${idx + 1}
+                            </span>
+                            ${wanState.length > 2 ? `
+                                <button type="button" onclick="removeWanRow(${wan.id})" class="text-gray-400 hover:text-red-500 text-xs font-normal">
+                                    Hapus
+                                </button>
+                            ` : ''}
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <div>
+                                <label class="block text-[11px] text-gray-500 mb-0.5">Interface Name</label>
+                                <input type="text" value="${escapeAttr(wan.name)}" oninput="updateWanField(${wan.id}, 'name', this.value)"
+                                    class="w-full px-2.5 py-1.5 rounded-lg border border-gray-300 focus:ring-1 focus:ring-blue-500 outline-none font-mono text-xs" required>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-gray-500 mb-0.5">Bandwidth (Mbps)</label>
+                                <input type="number" min="1" value="${wan.speed}" oninput="updateWanField(${wan.id}, 'speed', this.value)"
+                                    class="w-full px-2.5 py-1.5 rounded-lg border border-gray-300 focus:ring-1 focus:ring-blue-500 outline-none font-mono text-xs" required>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-gray-500 mb-0.5">Gateway IP</label>
+                                <input type="text" value="${escapeAttr(wan.gateway)}" oninput="updateWanField(${wan.id}, 'gateway', this.value)"
+                                    class="w-full px-2.5 py-1.5 rounded-lg border border-gray-300 focus:ring-1 focus:ring-blue-500 outline-none font-mono text-xs" required>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+
+            function addWanRow() {
+                if (wanState.length >= 6) {
+                    showToast('Maksimal 6 ISP yang didukung pada tampilan ini.');
+                    return;
+                }
+                const newId = wanCounter++;
+                wanState.push({
+                    id: newId,
+                    name: `ether${wanState.length + 1}-ISP${wanState.length + 1}`,
+                    speed: 50,
+                    gateway: `192.168.${wanState.length + 1}.1`
+                });
+                renderWanRows();
+            }
+
+            function removeWanRow(id) {
+                if (wanState.length <= 2) {
+                    showToast('Minimal harus ada 2 ISP/WAN untuk Load Balancing.');
+                    return;
+                }
+                wanState = wanState.filter(w => w.id !== id);
+                renderWanRows();
+            }
+
+            function updateWanField(id, field, value) {
+                const target = wanState.find(w => w.id === id);
+                if (target) {
+                    if (field === 'speed') {
+                        target.speed = Math.max(1, parseInt(value) || 1);
+                    } else {
+                        target[field] = value.trim();
+                    }
+                }
+            }
+
+            function applyPreset(presetType) {
+                if (presetType === '1:1') {
+                    wanState = [
+                        { id: 1, name: 'ether1-ISP1', speed: 50, gateway: '192.168.1.1' },
+                        { id: 2, name: 'ether2-ISP2', speed: 50, gateway: '192.168.2.1' }
+                    ];
+                } else if (presetType === '2:1') {
+                    wanState = [
+                        { id: 1, name: 'ether1-ISP1', speed: 100, gateway: '192.168.1.1' },
+                        { id: 2, name: 'ether2-ISP2', speed: 50, gateway: '192.168.2.1' }
+                    ];
+                } else if (presetType === '100:50:25') {
+                    wanState = [
+                        { id: 1, name: 'ether1-ISP1', speed: 100, gateway: '192.168.1.1' },
+                        { id: 2, name: 'ether2-ISP2', speed: 50, gateway: '192.168.2.1' },
+                        { id: 3, name: 'ether3-ISP3', speed: 25, gateway: '192.168.3.1' }
+                    ];
+                }
+                wanCounter = 10;
+                renderWanRows();
+                showToast(`Preset ${presetType} berhasil dimuat.`);
+            }
+
+            // Fungsi Utama Kalkulasi & Generate Script
+            function calculatePCC(event) {
+                if (event) event.preventDefault();
+
+                const lanInterface = document.getElementById('lan-interface').value.trim() || 'bridge-LAN';
+                const lanSubnet = document.getElementById('lan-subnet').value.trim() || '192.168.88.0/24';
+                const pccMatcher = document.getElementById('pcc-matcher').value;
+
+                const speeds = wanState.map(w => w.speed);
+                const totalBw = speeds.reduce((sum, v) => sum + v, 0);
+                const gcdValue = calculateArrayGCD(speeds);
+
+                let totalParts = 0;
+                const processedWANs = wanState.map((wan, idx) => {
+                    const ratio = Math.max(1, Math.round(wan.speed / gcdValue));
+                    totalParts += ratio;
+                    const percent = totalBw > 0 ? ((wan.speed / totalBw) * 100).toFixed(1) : 0;
+
+                    return {
+                        ...wan,
+                        ratio,
+                        percent,
+                        color: ISP_COLORS[idx % ISP_COLORS.length]
+                    };
+                });
+
+                // Assign Indeks PCC Denominator/Numerator
+                let currentIdx = 0;
+                processedWANs.forEach(wan => {
+                    wan.pccItems = [];
+                    for (let i = 0; i < wan.ratio; i++) {
+                        wan.pccItems.push(`${totalParts}/${currentIdx}`);
+                        currentIdx++;
+                    }
+                });
+
+                // Update DOM UI Hasil Rasio
+                document.getElementById('total-bw-display').innerText = `${totalBw} Mbps`;
+                document.getElementById('total-parts-display').innerText = `${totalParts} Parts`;
+                document.getElementById('gcd-badge').innerText = `FPB (GCD): ${gcdValue} Mbps`;
+
+                // Update Progress Bar
+                const progressBar = document.getElementById('ratio-progress-bar');
+                progressBar.innerHTML = '';
+                processedWANs.forEach(wan => {
+                    const seg = document.createElement('div');
+                    seg.className = `${wan.color.bg} h-full transition-all duration-300`;
+                    seg.style.width = `${wan.percent}%`;
+                    seg.title = `${wan.name}: ${wan.percent}% (${wan.ratio} bagian)`;
+                    progressBar.appendChild(seg);
+                });
+
+                // Update Breakdown List
+                const listContainer = document.getElementById('wan-breakdown-list');
+                listContainer.innerHTML = '';
+                processedWANs.forEach(wan => {
+                    const badges = wan.pccItems.map(p => `<span class="bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-mono px-1.5 py-0.5 rounded">${p}</span>`).join(' ');
+                    
+                    const item = document.createElement('div');
+                    item.className = 'p-2.5 rounded-xl bg-white border border-gray-200/80 shadow-sm flex items-center justify-between text-xs';
+                    item.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full ${wan.color.bg}"></span>
+                            <div>
+                                <span class="font-bold text-gray-900 font-mono">${escapeAttr(wan.name)}</span>
+                                <span class="text-[11px] text-gray-500 block">${wan.speed} Mbps (${wan.percent}%) &bull; Rasio: <strong>${wan.ratio}</strong></span>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center justify-end gap-1">
+                            ${badges}
+                        </div>
+                    `;
+                    listContainer.appendChild(item);
+                });
+
+                // Generate Script RouterOS v7 Valid
+                const generatedScript = generateROSv7Script({
+                    lanInterface,
+                    lanSubnet,
+                    pccMatcher,
+                    totalBw,
+                    totalParts,
+                    processedWANs
+                });
+
+                document.getElementById('script-textarea').value = generatedScript;
+
+                // Tampilkan Box Hasil
+                document.getElementById('result-box').classList.remove('hidden');
+            }
+
+            // Sintaks Resmi RouterOS v7 Script Builder
+            function generateROSv7Script(data) {
+                const { lanInterface, lanSubnet, pccMatcher, totalBw, totalParts, processedWANs } = data;
+                
+                let s = `# ========================================================\n`;
+                s += `# SCRIPT PCC LOAD BALANCING MIKROTIK ROUTEROS v7\n`;
+                s += `# Catatan Al Ikhsan Nahdillah Muis Malik\n`;
+                s += `# Total ISP: ${processedWANs.length} WAN | Total Speed: ${totalBw} Mbps | Denominator: ${totalParts}\n`;
+                s += `# LAN Interface: ${lanInterface} | Subnet: ${lanSubnet}\n`;
+                s += `# Matcher PCC: ${pccMatcher}\n`;
+                s += `# ========================================================\n\n`;
+
+                // 1. ROUTING TABLES (ROS v7 Requirement)
+                s += `# --------------------------------------------------------\n`;
+                s += `# 1. CREATING ROUTING TABLES (RouterOS v7 Explicit Table)\n`;
+                s += `# --------------------------------------------------------\n`;
+                s += `/routing table\n`;
+                processedWANs.forEach(wan => {
+                    const table = `to-${sanitize(wan.name)}`;
+                    s += `add name=${table} fib\n`;
+                });
+                s += `\n`;
+
+                // 2. IP FIREWALL ADDRESS LIST
+                s += `# --------------------------------------------------------\n`;
+                s += `# 2. IP FIREWALL ADDRESS-LIST (Local Subnet Bypass)\n`;
+                s += `# --------------------------------------------------------\n`;
+                s += `/ip firewall address-list\n`;
+                s += `add list=LOCAL-IP address=${lanSubnet} comment="Local Subnet Bypass"\n\n`;
+
+                // 3. IP FIREWALL NAT
+                s += `# --------------------------------------------------------\n`;
+                s += `# 3. IP FIREWALL NAT (Masquerade per WAN)\n`;
+                s += `# --------------------------------------------------------\n`;
+                s += `/ip firewall nat\n`;
+                processedWANs.forEach(wan => {
+                    s += `add chain=srcnat out-interface=${wan.name} action=masquerade comment="NAT-${escapeAttr(wan.name)}"\n`;
+                });
+                s += `\n`;
+
+                // 4. IP FIREWALL MANGLE
+                s += `# --------------------------------------------------------\n`;
+                s += `# 4. IP FIREWALL MANGLE (PCC Load Balancing Rules)\n`;
+                s += `# --------------------------------------------------------\n`;
+                s += `/ip firewall mangle\n`;
+                s += `# Accept / Bypass Trafik Lokal\n`;
+                s += `add chain=prerouting dst-address-list=LOCAL-IP action=accept comment="PCC: Bypass Local Traffic"\n\n`;
+
+                s += `# Connection Marking dari luar WAN (Port Forwarding / Input Connections)\n`;
+                processedWANs.forEach(wan => {
+                    const conn = `${sanitize(wan.name)}_conn`;
+                    s += `add chain=prerouting in-interface=${wan.name} connection-state=new action=mark-connection new-connection-mark=${conn} passthrough=yes comment="PCC: Incoming ${escapeAttr(wan.name)}"\n`;
+                });
+                s += `\n`;
+
+                s += `# PCC Connection Marking untuk Client LAN\n`;
+                processedWANs.forEach(wan => {
+                    const conn = `${sanitize(wan.name)}_conn`;
+                    wan.pccItems.forEach(pccIndex => {
+                        s += `add chain=prerouting in-interface=${lanInterface} connection-state=new dst-address-list=!LOCAL-IP per-connection-classifier=${pccMatcher}:${pccIndex} action=mark-connection new-connection-mark=${conn} passthrough=yes comment="PCC: Match ${escapeAttr(wan.name)} (${pccIndex})"\n`;
+                    });
+                });
+                s += `\n`;
+
+                s += `# Routing Marking berdasarkan Connection Mark\n`;
+                processedWANs.forEach(wan => {
+                    const conn = `${sanitize(wan.name)}_conn`;
+                    const table = `to-${sanitize(wan.name)}`;
+                    s += `add chain=prerouting in-interface=${lanInterface} connection-mark=${conn} action=mark-routing new-routing-mark=${table} passthrough=no comment="PCC: Routing Mark ${escapeAttr(wan.name)}"\n`;
+                });
+                s += `\n`;
+
+                s += `# Output Chain Marking (Router Own Traffic)\n`;
+                processedWANs.forEach(wan => {
+                    const conn = `${sanitize(wan.name)}_conn`;
+                    const table = `to-${sanitize(wan.name)}`;
+                    s += `add chain=output connection-mark=${conn} action=mark-routing new-routing-mark=${table} passthrough=no comment="PCC: Output ${escapeAttr(wan.name)}"\n`;
+                });
+                s += `\n`;
+
+                // 5. IP ROUTES (ROS v7 Syntax)
+                s += `# --------------------------------------------------------\n`;
+                s += `# 5. IP ROUTES (RouterOS v7 Table Routing & Failover)\n`;
+                s += `# --------------------------------------------------------\n`;
+                s += `/ip route\n`;
+                s += `# Routing PCC Tables\n`;
+                processedWANs.forEach(wan => {
+                    const table = `to-${sanitize(wan.name)}`;
+                    s += `add dst-address=0.0.0.0/0 gateway=${wan.gateway} routing-table=${table} check-gateway=ping comment="PCC Table Route ${escapeAttr(wan.name)}"\n`;
+                });
+                s += `\n`;
+
+                s += `# Main Routing Table Failover Fallback\n`;
+                processedWANs.forEach((wan, index) => {
+                    const dist = index + 1;
+                    s += `add dst-address=0.0.0.0/0 gateway=${wan.gateway} routing-table=main check-gateway=ping distance=${dist} comment="Failover Route ${escapeAttr(wan.name)} (Distance ${dist})"\n`;
+                });
+                s += `\n`;
+
+                s += `# ========================================================\n`;
+                s += `# FINISH - Selesai Dipasang!\n`;
+                s += `# ========================================================\n`;
+
+                return s;
+            }
+
+            // Helpers & Utility Functions
+            function sanitize(str) {
+                return str.replace(/[^a-zA-Z0-9_-]/g, '_');
+            }
+
+            function escapeAttr(str) {
+                return String(str).replace(/"/g, '&quot;');
+            }
+
+            function copyScript() {
+                const txt = document.getElementById('script-textarea');
+                txt.select();
+                try {
+                    const ok = document.execCommand('copy');
+                    if (ok) showToast('Script RouterOS v7 berhasil disalin!');
+                    else showToast('Gagal menyalin script ke clipboard.');
+                } catch (e) {
+                    showToast('Gagal menyalin script.');
+                }
+            }
+
+            function downloadScript() {
+                const txt = document.getElementById('script-textarea').value;
+                if (!txt) return;
+                const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `pcc_mikrotik_v7_${Date.now()}.rsc`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('Berkas script .rsc berhasil diunduh!');
+            }
+
+            function showToast(msg) {
+                const box = document.getElementById('toast-msg');
+                const txt = document.getElementById('toast-text');
+                txt.innerText = msg;
+                box.classList.remove('hidden');
+                setTimeout(() => {
+                    box.classList.add('hidden');
+                }, 3000);
+            }
+
+            function hideToast() {
+                document.getElementById('toast-msg').classList.add('hidden');
+            }
+
+            // Initialize Page State
+            document.addEventListener('DOMContentLoaded', () => {
+                renderWanRows();
+            });
+        </script>
+    </main>
+
+    <!-- FOOTER KOSONG DENGAN ID (DILUAT LEWAT COMPONENT LOADER) -->
+    <footer id="site-footer" class="max-w-2xl w-full mx-auto px-6 pt-12 pb-10 mt-16 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500"></footer>
+
+    <!-- SKRIP INISIALISASI SWUP & COMPONENT LOADER DENGAN ROOT ABSOLUTE PATH -->
+    <script>
+        function loadComponents() {
+            const headerEl = document.getElementById('site-header');
+            if (headerEl && !headerEl.innerHTML.trim()) {
+                fetch('https://ikhsannahdillah.github.io/components/header.html')
+                    .then(res => res.text())
+                    .then(html => headerEl.innerHTML = html)
+                    .catch(err => console.error('Header Load Error:', err));
+            }
+
+            const footerEl = document.getElementById('site-footer');
+            if (footerEl && !footerEl.innerHTML.trim()) {
+                fetch('https://ikhsannahdillah.github.io/components/footer.html')
+                    .then(res => res.text())
+                    .then(html => footerEl.innerHTML = html)
+                    .catch(err => console.error('Footer Load Error:', err));
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadComponents);
+
+        if (typeof window.swupInstance === 'undefined') {
+            window.swupInstance = new Swup({
+                plugins: [
+                    new SwupScriptsPlugin(),
+                    new SwupHeadPlugin({
+                        awaitAssets: true,
+                        persistAssets: true
+                    })
+                ],
+                resolveUrl: (url) => url
+            });
+
+            window.swupInstance.hooks.on('page:view', loadComponents);
+        }
+    </script>
+</body>
+</html>
