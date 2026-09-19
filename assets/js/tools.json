@@ -6,13 +6,5 @@
     "category": "FTTH / Fiber",
     "description": "Hitung persentase rasio ODC (1:99 - 50:50) dan estimasi redaman output ODP secara akurat.",
     "status": "active"
-  },
-  {
-    "id": 2,
-    "title": "Kalkulator Ratio PCC Mikrotik V7",
-    "url": "mikrotik-pcc-ratio-calculator.html",
-    "category": "Mikrotik / Load Balance",
-    "description": "Aplikasi kalkulator rasio bandwidth dan pembuat script konfigurasi Per Connection Classifier (PCC) Load Balancing otomatis untuk MikroTik RouterOS v7.",
-    "status": "inactive"
   }
 ]
