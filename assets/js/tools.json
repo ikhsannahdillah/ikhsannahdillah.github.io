@@ -13,6 +13,6 @@
     "url": "mikrotik-pcc-ratio-calculator.html",
     "category": "Mikrotik / Load Balance",
     "description": "Aplikasi kalkulator rasio bandwidth dan pembuat script konfigurasi Per Connection Classifier (PCC) Load Balancing otomatis untuk MikroTik RouterOS v7.",
-    "status": "active"
+    "status": "inactive"
   }
 ]
