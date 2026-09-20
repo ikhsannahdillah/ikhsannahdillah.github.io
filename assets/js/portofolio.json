@@ -1,5 +1,11 @@
 [
   {
+    "nama": "RSUD Pasarwajo, Kab. Buton",
+    "tahun": "2026",
+    "layanan": "Ransomware Incident Response: Proxmox System Recovery & Backup Server Provisioning",
+    "logo": "assets/img/portofolio/buton.png"
+  },
+  {
     "nama": "PT Harmoni Energi Persada (PLTU Baruta), Kab. Buton Tengah",
     "tahun": "2026",
     "layanan": "Instalasi Infrastruktur Jaringan Komputer, Konfigurasi Router dan Access Point",
