@@ -1780,7 +1780,7 @@ function switchScreen(name) {
   document.querySelector('.tab-btn[data-screen="' + name + '"]').classList.add('active');
 
   // Update app bar title
-  const titles = { map: 'Kota Baubau', air: 'Kualitas Udara', hotspot: 'Hotspot Karhutla', tren: 'Tren PM2.5' };
+  const titles = { map: 'Bau-Bau Monitor', air: 'Kualitas Udara', hotspot: 'Hotspot Karhutla', tren: 'Tren PM2.5' };
   document.getElementById('appTitle').textContent = titles[name] || 'Kota Baubau';
 
   // Reset map
