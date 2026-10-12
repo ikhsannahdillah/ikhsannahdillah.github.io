@@ -1,0 +1,2051 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0f1e">
+<title>Monitoring Kualitas Udara dan Karhutla Kota Baubau</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<style>
+  :root {
+    --blue: #007aff;
+    --red: #ff3b30;
+    --orange: #ff9500;
+    --yellow: #ffcc00;
+    --green: #34c759;
+    --purple: #af52de;
+    --bg: #f2f2f7;
+    --card: #ffffff;
+    --sep: rgba(60,60,67,0.13);
+    --label: #000;
+    --label2: #3c3c4399;
+    --label3: #3c3c434d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px; line-height: 1.4;
+    color: var(--label); background: #1c1c1e;
+    user-select: none; -webkit-user-select: none;
+    -webkit-font-smoothing: antialiased;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ============ SPLASH SCREEN ============ */
+  .splash {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: linear-gradient(160deg, #0a0f1e 0%, #1a1220 40%, #2d1810 75%, #4a1f0a 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow: hidden;
+    transition: opacity 0.6s ease, visibility 0.6s;
+  }
+  .splash.hide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .splash::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(255,120,40,0.12), transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(220,40,40,0.1), transparent 55%),
+      radial-gradient(circle at 50% 100%, rgba(255,80,20,0.25), transparent 60%);
+    pointer-events: none;
+  }
+  .splash-illustration {
+    width: 200px;
+    height: 200px;
+    position: relative;
+    z-index: 2;
+    margin-bottom: 24px;
+    filter: drop-shadow(0 20px 40px rgba(255,80,20,0.4));
+    animation: splashFloat 3s ease-in-out infinite;
+  }
+  @keyframes splashFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .splash-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+    text-align: center;
+    letter-spacing: -0.4px;
+    line-height: 1.25;
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 2;
+    max-width: 340px;
+    background: linear-gradient(135deg, #fff 0%, #ffccaa 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .splash-subtitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.55);
+    text-align: center;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    position: relative;
+    z-index: 2;
+  }
+  .splash-tagline {
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    text-align: center;
+    max-width: 280px;
+    line-height: 1.5;
+    position: relative;
+    z-index: 2;
+    margin-bottom: 32px;
+  }
+  .splash-loader {
+    display: flex;
+    gap: 6px;
+    position: relative;
+    z-index: 2;
+  }
+  .splash-loader span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ff9500;
+    animation: splashBounce 1.4s infinite ease-in-out;
+  }
+  .splash-loader span:nth-child(1) { animation-delay: -0.32s; }
+  .splash-loader span:nth-child(2) { animation-delay: -0.16s; }
+  .splash-loader span:nth-child(3) { animation-delay: 0s; }
+  @keyframes splashBounce {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; background: #ff9500; }
+    40% { transform: scale(1); opacity: 1; background: #ff3b30; }
+  }
+  .splash-version {
+    position: absolute;
+    bottom: max(env(safe-area-inset-bottom), 24px);
+    font-size: 10px;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+    z-index: 2;
+  }
+
+  /* ============ PHONE FRAME (desktop) ============ */
+  .app {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  @media (min-width: 640px) {
+    body { padding: 24px; }
+    .app {
+      width: 400px;
+      height: min(844px, calc(100vh - 48px));
+      border-radius: 44px;
+      box-shadow:
+        0 0 0 10px #1c1c1e,
+        0 0 0 12px #3a3a3c,
+        0 30px 90px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+    .app::before {
+      content: '';
+      position: absolute;
+      top: 8px; left: 50%;
+      transform: translateX(-50%);
+      width: 100px; height: 26px;
+      background: #1c1c1e;
+      border-radius: 20px;
+      z-index: 9999;
+      pointer-events: none;
+    }
+  }
+  @media (min-width: 640px) and (max-height: 700px) {
+    .app { height: calc(100vh - 32px); border-radius: 32px; }
+    .app::before { display: none; }
+  }
+
+  /* ============ APP BAR ============ */
+  .app-bar {
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 0.5px solid var(--sep);
+    padding-top: max(env(safe-area-inset-top), 0px);
+    flex-shrink: 0;
+    z-index: 100;
+    position: relative;
+  }
+  @media (min-width: 640px) {
+    .app-bar { padding-top: 34px; }
+  }
+  .app-bar-inner {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px 0 16px;
+    gap: 8px;
+  }
+  .app-bar-title {
+    font-size: 15px; font-weight: 700;
+    letter-spacing: -0.3px;
+    display: flex; align-items: center; gap: 8px;
+    color: var(--label);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .app-bar-title svg { color: var(--red); flex-shrink: 0; }
+  .app-bar-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .bar-btn {
+    width: 36px; height: 36px;
+    border: none; background: transparent;
+    border-radius: 10px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--blue);
+    transition: background 0.15s;
+  }
+  .bar-btn:active { background: rgba(0,0,0,0.05); }
+
+  /* ============ SCREENS ============ */
+  .screens { flex: 1; position: relative; overflow: hidden; }
+  .screen {
+    position: absolute; inset: 0;
+    display: none; flex-direction: column;
+    overflow: hidden;
+  }
+  .screen.active { display: flex; }
+  .screen-scroll {
+    flex: 1; overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding-bottom: 24px;
+  }
+
+  /* ============ MAP ============ */
+  #screen-map { background: #e5e7eb; }
+  #map { position: absolute; inset: 0; z-index: 1; }
+
+  .map-status {
+    position: absolute;
+    top: 12px; left: 12px; right: 12px;
+    z-index: 500;
+    display: flex; gap: 8px;
+    pointer-events: none;
+  }
+  .status-pill {
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 22px;
+    padding: 6px 14px;
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1), 0 0 0 0.5px rgba(0,0,0,0.04);
+    pointer-events: auto; flex: 1; min-width: 0;
+    height: 42px;
+  }
+  .status-pill .indicator {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #c7c7cc; flex-shrink: 0;
+    transition: background 0.3s;
+  }
+  .status-pill .indicator.green { background: var(--green); box-shadow: 0 0 0 3px rgba(52,199,89,0.2); }
+  .status-pill .indicator.yellow { background: var(--yellow); box-shadow: 0 0 0 3px rgba(255,204,0,0.2); }
+  .status-pill .indicator.orange { background: var(--orange); box-shadow: 0 0 0 3px rgba(255,149,0,0.2); }
+  .status-pill .indicator.red { background: var(--red); box-shadow: 0 0 0 3px rgba(255,59,48,0.2); }
+  .status-pill .info {
+    flex: 1; min-width: 0;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .status-pill .lbl {
+    font-size: 10px; color: var(--label2);
+    font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.4px; line-height: 1; margin-bottom: 2px;
+  }
+  .status-pill .val {
+    font-size: 13px; font-weight: 700; color: var(--label);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    line-height: 1.2;
+  }
+  .map-icon-btn {
+    width: 42px; height: 42px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: none; border-radius: 21px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--blue);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1), 0 0 0 0.5px rgba(0,0,0,0.04);
+    pointer-events: auto;
+    transition: transform 0.15s;
+    flex-shrink: 0;
+  }
+  .map-icon-btn:active { transform: scale(0.92); }
+
+  .map-fabs {
+    position: absolute;
+    right: 12px; bottom: 130px;
+    z-index: 500;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .fab {
+    width: 42px; height: 42px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: none; border-radius: 21px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--blue);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1), 0 0 0 0.5px rgba(0,0,0,0.04);
+    transition: transform 0.15s;
+  }
+  .fab:active { transform: scale(0.92); }
+
+  .map-card {
+    position: absolute;
+    bottom: 12px; left: 12px; right: 12px;
+    z-index: 500;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 18px;
+    padding: 12px 14px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 0 0 0.5px rgba(0,0,0,0.04);
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .map-card:active { transform: scale(0.99); }
+  .map-card .aq-badge {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    flex-shrink: 0;
+    background: #c7c7cc;
+    transition: background 0.3s;
+    color: #fff;
+  }
+  .map-card .aq-badge .num {
+    font-size: 18px; font-weight: 800; line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .map-card .aq-badge .unit {
+    font-size: 7px; font-weight: 700;
+    letter-spacing: 0.3px; margin-top: 2px;
+    opacity: 0.85;
+  }
+  .map-card .aq-detail { flex: 1; min-width: 0; }
+  .map-card .aq-detail .title {
+    font-size: 15px; font-weight: 700;
+    color: var(--label); margin-bottom: 3px;
+  }
+  .map-card .aq-detail .sub {
+    font-size: 12px; color: var(--label2);
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .map-card .chevron {
+    color: var(--label3);
+    display: flex;
+  }
+
+  /* ============ CARDS / LISTS ============ */
+  .section { margin-top: 20px; }
+  .section-title {
+    font-size: 13px; font-weight: 600;
+    color: var(--label2); text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 0 20px 8px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    margin: 0 16px;
+    overflow: hidden;
+  }
+  .list-row {
+    display: flex; align-items: center;
+    padding: 11px 16px;
+    gap: 14px; min-height: 48px;
+    border-bottom: 0.5px solid var(--sep);
+    position: relative;
+  }
+  .list-row:last-child { border-bottom: none; }
+  .list-row.tappable { cursor: pointer; transition: background 0.15s; }
+  .list-row.tappable:active { background: #e5e5ea; }
+  .list-icon {
+    width: 30px; height: 30px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: #fff;
+  }
+  .list-label { flex: 1; font-size: 15px; color: var(--label); }
+  .list-value {
+    font-size: 15px; color: var(--label2);
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
+  .list-value.strong { color: var(--label); font-weight: 600; }
+  .list-value.on { color: var(--green); font-weight: 700; }
+
+  /* ============ HERO ============ */
+  .hero {
+    padding: 22px 20px 26px;
+    text-align: center;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.4s;
+    background: linear-gradient(160deg, #8e8e93 0%, #636366 100%);
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -50%; right: -30%;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.22);
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .hero-badge .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #fff;
+    animation: pulseDot 1.8s infinite;
+  }
+  @keyframes pulseDot { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+  .hero-value {
+    font-size: 58px; font-weight: 800;
+    line-height: 1; letter-spacing: -2px;
+    margin-bottom: 4px;
+    position: relative;
+    font-variant-numeric: tabular-nums;
+  }
+  .hero-unit {
+    font-size: 12px; font-weight: 600;
+    opacity: 0.85; letter-spacing: 0.6px;
+    text-transform: uppercase; margin-bottom: 14px;
+  }
+  .hero-status {
+    display: inline-block;
+    padding: 6px 16px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 20px;
+    font-size: 13px; font-weight: 700;
+    backdrop-filter: blur(10px);
+  }
+  .hero-update {
+    font-size: 11px; opacity: 0.75;
+    margin-top: 10px; font-weight: 500;
+  }
+
+  /* ============ ALERT CARD ============ */
+  .alert-card {
+    background: #ffe5e5;
+    border: 0.5px solid #ffc9c9;
+    border-radius: 14px;
+    margin: 16px;
+    padding: 12px 14px;
+    display: none;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .alert-card.show { display: flex; }
+  .alert-card .icon { color: var(--red); flex-shrink: 0; margin-top: 2px; }
+  .alert-card .content .title {
+    font-weight: 700; font-size: 14px;
+    color: #9b2c2c; margin-bottom: 3px;
+  }
+  .alert-card .content .desc {
+    font-size: 13px; line-height: 1.5;
+    color: #7d2828;
+  }
+
+  /* ============ SLIDER ============ */
+  .slider-card {
+    background: var(--card);
+    border-radius: 14px;
+    margin: 16px;
+    padding: 16px;
+  }
+  .slider-card .title {
+    font-size: 13px; font-weight: 600;
+    color: var(--label2);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 12px;
+  }
+  input[type="range"] {
+    width: 100%; -webkit-appearance: none;
+    height: 4px; background: #e5e5ea;
+    border-radius: 2px; outline: none;
+    margin: 8px 0;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px; height: 24px;
+    background: #fff; border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2), 0 0 0 0.5px rgba(0,0,0,0.04);
+    cursor: pointer;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 24px; height: 24px;
+    background: #fff; border: none;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    cursor: pointer;
+  }
+  .slider-time {
+    text-align: center;
+    font-size: 15px; font-weight: 700;
+    color: var(--label); margin-top: 4px;
+  }
+  .slider-vals {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 12px; padding-top: 12px;
+    border-top: 0.5px solid var(--sep);
+  }
+  .slider-vals .item { text-align: center; }
+  .slider-vals .lbl {
+    font-size: 11px; color: var(--label2);
+    font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.3px; margin-bottom: 4px;
+  }
+  .slider-vals .val {
+    font-size: 18px; font-weight: 700;
+    color: var(--label);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ============ HOTSPOT LIST ============ */
+  .hotspot-item {
+    display: flex; align-items: center;
+    padding: 11px 16px; gap: 14px;
+    border-bottom: 0.5px solid var(--sep);
+    cursor: pointer; transition: background 0.15s;
+    min-height: 60px;
+  }
+  .hotspot-item:last-child { border-bottom: none; }
+  .hotspot-item:active { background: #e5e5ea; }
+  .hs-dot {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: #fff;
+    background: var(--orange);
+  }
+  .hs-dot.high { background: var(--red); }
+  .hs-dot.nominal { background: var(--orange); }
+  .hs-dot.low { background: var(--yellow); color: #8a6d00; }
+  .hs-info { flex: 1; min-width: 0; }
+  .hs-info .row-1 {
+    display: flex; align-items: center;
+    gap: 8px; margin-bottom: 2px;
+  }
+  .hs-info .dist {
+    font-weight: 700; font-size: 15px;
+    color: var(--label);
+    font-variant-numeric: tabular-nums;
+  }
+  .hs-info .bearing {
+    font-size: 11px; color: var(--blue);
+    background: #e8f2ff;
+    padding: 2px 7px; border-radius: 8px;
+    font-weight: 600;
+  }
+  .hs-info .row-2 {
+    font-size: 12px; color: var(--label2);
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .hs-chevron { color: var(--label3); flex-shrink: 0; }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 24px;
+  }
+  .empty-state .em {
+    display: block; margin: 0 auto 16px;
+    color: var(--label3);
+  }
+  .empty-state .ttl {
+    font-size: 17px; font-weight: 700;
+    color: var(--label); margin-bottom: 6px;
+  }
+  .empty-state .desc {
+    font-size: 14px; color: var(--label2);
+    line-height: 1.5;
+  }
+
+  /* ============ CHART ============ */
+  .chart-card {
+    background: var(--card);
+    border-radius: 14px;
+    margin: 16px;
+    padding: 16px;
+    height: 240px;
+  }
+
+  /* ============ TAB BAR ============ */
+  .tab-bar {
+    background: rgba(255,255,255,0.94);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-top: 0.5px solid var(--sep);
+    display: flex;
+    padding-bottom: max(env(safe-area-inset-bottom), 6px);
+    padding-top: 6px;
+    flex-shrink: 0;
+    z-index: 200;
+  }
+  .tab-btn {
+    flex: 1; background: none; border: none;
+    padding: 4px 2px;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 2px;
+    cursor: pointer;
+    color: #8e8e93;
+    transition: color 0.15s;
+    font-family: inherit;
+    min-height: 44px;
+  }
+  .tab-btn .tab-icon {
+    height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.15s;
+  }
+  .tab-btn .tab-label {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.1px;
+  }
+  .tab-btn:active .tab-icon { transform: scale(0.9); }
+  .tab-btn.active { color: var(--blue); }
+
+  /* ============ MODAL ============ */
+  .overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 1000; opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+    border-radius: inherit;
+  }
+  .overlay.show { opacity: 1; pointer-events: auto; }
+  .sheet-modal {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    background: var(--bg);
+    border-radius: 16px 16px 0 0;
+    z-index: 1001;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
+    padding-bottom: max(env(safe-area-inset-bottom), 12px);
+    max-height: 85%;
+    display: flex; flex-direction: column;
+  }
+  .sheet-modal.show { transform: translateY(0); }
+  .sheet-head {
+    padding: 14px 20px 10px;
+    display: flex; justify-content: space-between;
+    align-items: center;
+    border-bottom: 0.5px solid var(--sep);
+    flex-shrink: 0;
+  }
+  .sheet-head .ttl {
+    font-size: 17px; font-weight: 700;
+    color: var(--label);
+  }
+  .sheet-head .close {
+    width: 30px; height: 30px;
+    border-radius: 15px;
+    background: #e5e5ea;
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--label2);
+  }
+  .sheet-head .close:active { background: #d1d1d6; }
+  .sheet-body {
+    flex: 1; overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px 0 20px;
+  }
+
+  /* Basemap grid */
+  .bm-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; padding: 4px 20px;
+  }
+  .bm-card {
+    border-radius: 12px; overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    background: #fff; position: relative;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .bm-card:active { transform: scale(0.97); }
+  .bm-card.active { border-color: var(--blue); }
+  .bm-thumb {
+    width: 100%; height: 80px;
+    background-size: cover; background-position: center;
+  }
+  .bm-name {
+    padding: 8px 10px;
+    font-size: 13px; font-weight: 600;
+    color: var(--label);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .bm-check {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--blue); color: #fff;
+    font-size: 12px; font-weight: 800;
+    display: none; align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,122,255,0.4);
+  }
+  .bm-card.active .bm-check { display: flex; }
+
+  /* ============ LOADING & TOAST ============ */
+  .loading {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(20px);
+    padding: 16px 22px;
+    border-radius: 14px;
+    z-index: 3000;
+    display: none; align-items: center; gap: 12px;
+    font-size: 14px; font-weight: 600;
+    color: var(--label);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+  }
+  .loading.active { display: flex; }
+  .spinner {
+    width: 20px; height: 20px;
+    border: 2.5px solid #e5e5ea;
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .toast {
+    position: absolute;
+    top: max(env(safe-area-inset-top), 12px);
+    left: 16px; right: 16px;
+    background: #1c1c1e;
+    color: #fff;
+    padding: 11px 16px;
+    border-radius: 12px;
+    font-size: 13px; font-weight: 600;
+    z-index: 2000;
+    opacity: 0; transform: translateY(-20px);
+    transition: all 0.3s cubic-bezier(0.32,0.72,0,1);
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.success { background: #059669; }
+  .toast.error { background: var(--red); }
+
+  /* ============ LEAFLET ============ */
+  .leaflet-control-zoom { display: none !important; }
+  .leaflet-control-attribution {
+    background: rgba(255,255,255,0.7) !important;
+    font-size: 9px !important;
+    padding: 2px 6px !important;
+    color: var(--label2) !important;
+    border-radius: 6px 0 0 0 !important;
+  }
+  .leaflet-popup-content-wrapper {
+    background: #fff; color: var(--label);
+    border-radius: 14px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+    padding: 4px;
+  }
+  .leaflet-popup-tip { background: #fff; }
+  .leaflet-popup-content {
+    margin: 12px 16px;
+    font-size: 13px; line-height: 1.5;
+    font-family: inherit;
+  }
+  .leaflet-popup-content .pt {
+    font-weight: 700; font-size: 15px;
+    color: var(--label); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .leaflet-popup-content hr {
+    border: none; border-top: 0.5px solid var(--sep); margin: 8px 0;
+  }
+  .leaflet-popup-content b { color: var(--label); font-weight: 600; }
+  .leaflet-popup-content .link {
+    color: var(--blue); font-weight: 600;
+    text-decoration: none;
+  }
+  .leaflet-popup-close-button {
+    color: var(--label2) !important;
+    font-size: 18px !important;
+    padding: 6px !important;
+  }
+  .custom-cluster { background: transparent !important; border: none !important; }
+  .pm-marker {
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; font-size: 0.62rem; font-weight: 800;
+    color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.95), 0 2px 6px rgba(0,0,0,0.2);
+  }
+  .wind-svg { pointer-events: none; }
+  .city-label {
+    white-space: nowrap; font-weight: 600;
+    font-size: 0.68rem; padding: 3px 8px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.96);
+    color: var(--label);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    border: 0.5px solid rgba(0,0,0,0.08);
+  }
+</style>
+</head>
+<body>
+
+<!-- SPLASH SCREEN -->
+<div class="splash" id="splash">
+  <svg class="splash-illustration" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="bgGrad" cx="50%" cy="60%" r="60%">
+        <stop offset="0%" stop-color="#2d1005" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#0a0505" stop-opacity="1"/>
+      </radialGradient>
+      <linearGradient id="flameGrad" x1="50%" y1="0%" x2="50%" y2="100%">
+        <stop offset="0%" stop-color="#ffcc00"/>
+        <stop offset="40%" stop-color="#ff6600"/>
+        <stop offset="100%" stop-color="#dc2626"/>
+      </linearGradient>
+      <linearGradient id="flameInner" x1="50%" y1="0%" x2="50%" y2="100%">
+        <stop offset="0%" stop-color="#ffffcc"/>
+        <stop offset="60%" stop-color="#ffcc00"/>
+        <stop offset="100%" stop-color="#ff9500"/>
+      </linearGradient>
+      <linearGradient id="smokeGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+        <stop offset="0%" stop-color="#8b5a3c" stop-opacity="0"/>
+        <stop offset="50%" stop-color="#6b4226" stop-opacity="0.5"/>
+        <stop offset="100%" stop-color="#4a2f1a" stop-opacity="0"/>
+      </linearGradient>
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="4" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+
+    <circle cx="100" cy="100" r="90" fill="url(#bgGrad)" stroke="#3a1a0a" stroke-width="2"/>
+    <circle cx="100" cy="100" r="90" fill="none" stroke="#ff6600" stroke-width="1" opacity="0.4"/>
+
+    <g opacity="0.15" stroke="#ff9500" stroke-width="0.5">
+      <line x1="20" y1="100" x2="180" y2="100"/>
+      <line x1="100" y1="20" x2="100" y2="180"/>
+      <line x1="40" y1="60" x2="160" y2="60"/>
+      <line x1="40" y1="140" x2="160" y2="140"/>
+      <line x1="60" y1="40" x2="60" y2="160"/>
+      <line x1="140" y1="40" x2="140" y2="160"/>
+    </g>
+
+    <g opacity="0.6">
+      <path d="M100 75 Q 90 60, 95 40 T 100 15" stroke="url(#smokeGrad)" stroke-width="8" fill="none" stroke-linecap="round">
+        <animate attributeName="d" dur="6s" repeatCount="indefinite"
+          values="M100 75 Q 90 60, 95 40 T 100 15;
+                  M100 75 Q 105 60, 100 40 T 95 15;
+                  M100 75 Q 90 60, 95 40 T 100 15"/>
+      </path>
+      <path d="M108 78 Q 120 65, 115 45 T 118 20" stroke="url(#smokeGrad)" stroke-width="6" fill="none" stroke-linecap="round">
+        <animate attributeName="d" dur="7s" repeatCount="indefinite"
+          values="M108 78 Q 120 65, 115 45 T 118 20;
+                  M108 78 Q 100 65, 105 45 T 110 20;
+                  M108 78 Q 120 65, 115 45 T 118 20"/>
+      </path>
+      <path d="M92 78 Q 80 65, 85 45 T 82 20" stroke="url(#smokeGrad)" stroke-width="5" fill="none" stroke-linecap="round">
+        <animate attributeName="d" dur="8s" repeatCount="indefinite"
+          values="M92 78 Q 80 65, 85 45 T 82 20;
+                  M92 78 Q 100 65, 95 45 T 90 20;
+                  M92 78 Q 80 65, 85 45 T 82 20"/>
+      </path>
+    </g>
+
+    <path d="M100 70 Q 85 90, 80 110 Q 75 130, 90 138 Q 85 120, 95 110 Q 95 130, 100 140 Q 105 130, 105 110 Q 115 120, 110 138 Q 125 130, 120 110 Q 115 90, 100 70 Z"
+          fill="url(#flameGrad)" filter="url(#glow)">
+      <animate attributeName="d" dur="1.5s" repeatCount="indefinite"
+        values="M100 70 Q 85 90, 80 110 Q 75 130, 90 138 Q 85 120, 95 110 Q 95 130, 100 140 Q 105 130, 105 110 Q 115 120, 110 138 Q 125 130, 120 110 Q 115 90, 100 70 Z;
+                M100 72 Q 87 92, 82 112 Q 77 132, 92 140 Q 87 122, 97 112 Q 97 132, 100 142 Q 103 132, 103 112 Q 113 122, 108 140 Q 123 132, 118 112 Q 113 92, 100 72 Z;
+                M100 70 Q 85 90, 80 110 Q 75 130, 90 138 Q 85 120, 95 110 Q 95 130, 100 140 Q 105 130, 105 110 Q 115 120, 110 138 Q 125 130, 120 110 Q 115 90, 100 70 Z"/>
+    </path>
+
+    <path d="M100 88 Q 92 100, 90 115 Q 88 128, 100 133 Q 112 128, 110 115 Q 108 100, 100 88 Z"
+          fill="url(#flameInner)">
+      <animate attributeName="d" dur="1.2s" repeatCount="indefinite"
+        values="M100 88 Q 92 100, 90 115 Q 88 128, 100 133 Q 112 128, 110 115 Q 108 100, 100 88 Z;
+                M100 90 Q 94 102, 92 117 Q 90 130, 100 135 Q 110 130, 108 117 Q 106 102, 100 90 Z;
+                M100 88 Q 92 100, 90 115 Q 88 128, 100 133 Q 112 128, 110 115 Q 108 100, 100 88 Z"/>
+    </path>
+
+    <circle cx="100" cy="118" r="5" fill="#ffffcc" opacity="0.95">
+      <animate attributeName="r" dur="0.8s" repeatCount="indefinite" values="5;6;5"/>
+      <animate attributeName="opacity" dur="0.8s" repeatCount="indefinite" values="0.95;0.6;0.95"/>
+    </circle>
+
+    <g transform="translate(140, 60)">
+      <path d="M0 0 C -8 -12, -12 -18, -12 -24 A 12 12 0 1 1 12 -24 C 12 -18, 8 -12, 0 0 Z"
+            fill="#007aff" stroke="#fff" stroke-width="1.5" filter="url(#glow)"/>
+      <circle cx="0" cy="-24" r="4" fill="#fff"/>
+      <animateTransform attributeName="transform" type="translate"
+        values="140,60; 140,57; 140,60" dur="2s" repeatCount="indefinite" additive="replace"/>
+    </g>
+
+    <g opacity="0.4" fill="#1a0a05">
+      <rect x="30" y="155" width="8" height="20"/>
+      <rect x="42" y="148" width="6" height="27"/>
+      <rect x="52" y="158" width="10" height="17"/>
+      <rect x="66" y="150" width="7" height="25"/>
+      <rect x="127" y="152" width="8" height="23"/>
+      <rect x="140" y="145" width="6" height="30"/>
+      <rect x="150" y="156" width="9" height="19"/>
+      <rect x="163" y="150" width="7" height="25"/>
+    </g>
+
+    <g opacity="0.5" fill="#1a0a05">
+      <path d="M 20 175 L 24 160 L 28 175 Z"/>
+      <path d="M 18 175 L 24 165 L 30 175 Z"/>
+      <path d="M 172 175 L 176 162 L 180 175 Z"/>
+      <path d="M 170 175 L 176 167 L 182 175 Z"/>
+    </g>
+  </svg>
+
+  <h1 class="splash-title">Monitoring Kualitas Udara<br>& Karhutla Kota Baubau</h1>
+  <p class="splash-subtitle">Real-time · NASA FIRMS + Open-Meteo</p>
+  <p class="splash-tagline">Pantau titik panas, polusi asap, dan kualitas udara secara langsung</p>
+
+  <div class="splash-loader">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <div class="splash-version">v1.0 · Sulawesi Tenggara</div>
+</div>
+
+<div class="app">
+
+  <!-- APP BAR -->
+  <header class="app-bar">
+    <div class="app-bar-inner">
+      <div class="app-bar-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+        </svg>
+        <span id="appTitle">Monitoring Kualitas Udara dan Karhutla Kota Baubau</span>
+      </div>
+      <div class="app-bar-actions">
+        <button class="bar-btn" id="locateBtn" title="Lokasi">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+        </button>
+        <button class="bar-btn" id="refreshBtn" title="Refresh">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 4v6h-6M1 20v-6h6"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- SCREENS -->
+  <div class="screens">
+
+    <!-- MAP SCREEN -->
+    <section class="screen active" id="screen-map">
+      <div id="map"></div>
+
+      <div class="map-status">
+        <div class="status-pill">
+          <span class="indicator" id="statusIndicator"></span>
+          <div class="info">
+            <span class="lbl">PM2.5 · Bau-Bau</span>
+            <span class="val" id="statusValue">Memuat data...</span>
+          </div>
+        </div>
+        <button class="map-icon-btn" id="layerBtn" title="Layer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </button>
+        <button class="map-icon-btn" id="basemapBtn" title="Tampilan">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="map-fabs">
+        <button class="fab" id="zoomIn" title="Zoom in">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/>
+          </svg>
+        </button>
+        <button class="fab" id="zoomOut" title="Zoom out">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M8 11h6"/>
+          </svg>
+        </button>
+        <button class="fab" id="fullscreenBtn" title="Fullscreen">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="map-card" id="mapCard">
+        <div class="aq-badge" id="mapAqBadge">
+          <span class="num" id="mapAqNum">--</span>
+          <span class="unit">PM2.5</span>
+        </div>
+        <div class="aq-detail">
+          <div class="title" id="mapAqTitle">Memuat...</div>
+          <div class="sub" id="mapAqSub">Mengambil data kualitas udara</div>
+        </div>
+        <span class="chevron">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </span>
+      </div>
+    </section>
+
+    <!-- AIR SCREEN -->
+    <section class="screen" id="screen-air">
+      <div class="screen-scroll">
+        <div class="hero" id="hero">
+          <span class="hero-badge">
+            <span class="dot"></span> KUALITAS UDARA · LIVE
+          </span>
+          <div class="hero-value" id="heroValue">--</div>
+          <div class="hero-unit">µg/m³ · PM2.5</div>
+          <div class="hero-status" id="heroStatus">Memuat...</div>
+          <div class="hero-update" id="heroUpdate">-</div>
+        </div>
+
+        <div class="alert-card" id="alertCard">
+          <span class="icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </span>
+          <div class="content">
+            <div class="title">Peringatan Kesehatan</div>
+            <div class="desc">Kualitas udara tidak sehat. Gunakan masker N95 dan hindari aktivitas luar ruangan.</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Detail Polusi</div>
+          <div class="card">
+            <div class="list-row">
+              <span class="list-icon" style="background:#007aff;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>
+              </span>
+              <span class="list-label">US AQI</span>
+              <span class="list-value strong" id="airAqi">--</span>
+            </div>
+            <div class="list-row">
+              <span class="list-icon" style="background:#8e8e93;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9.59 4.59A2 2 0 1 1 11 8H2M12.59 19.41A2 2 0 1 0 14 16H2"/>
+                </svg>
+              </span>
+              <span class="list-label">PM10</span>
+              <span class="list-value strong" id="airPm10">--</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Cuaca</div>
+          <div class="card">
+            <div class="list-row">
+              <span class="list-icon" style="background:#ff9500;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
+                </svg>
+              </span>
+              <span class="list-label">Suhu</span>
+              <span class="list-value strong" id="airTemp">--</span>
+            </div>
+            <div class="list-row">
+              <span class="list-icon" style="background:#007aff;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5S5 13 5 15a7 7 0 0 0 7 7z"/>
+                </svg>
+              </span>
+              <span class="list-label">Kelembapan</span>
+              <span class="list-value strong" id="airHum">--</span>
+            </div>
+            <div class="list-row">
+              <span class="list-icon" style="background:#34c759;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9.59 4.59A2 2 0 1 1 11 8H2M12.59 19.41A2 2 0 1 0 14 16H2M17.73 7.73A2.5 2.5 0 1 1 19.5 12H2"/>
+                </svg>
+              </span>
+              <span class="list-label">Kecepatan Angin</span>
+              <span class="list-value strong" id="airWind">--</span>
+            </div>
+            <div class="list-row">
+              <span class="list-icon" style="background:#af52de;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+                </svg>
+              </span>
+              <span class="list-label">Arah Angin</span>
+              <span class="list-value strong" id="airWindDir">--</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="slider-card">
+          <div class="title">Prediksi ke Depan</div>
+          <input type="range" id="timeSlider" min="0" max="24" value="0" step="1">
+          <div class="slider-time" id="timeDisplay">Sekarang</div>
+          <div class="slider-vals">
+            <div class="item">
+              <div class="lbl">PM2.5</div>
+              <div class="val" id="fcastPm25">--</div>
+            </div>
+            <div class="item">
+              <div class="lbl">US AQI</div>
+              <div class="val" id="fcastAqi">--</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOTSPOT SCREEN -->
+    <section class="screen" id="screen-hotspot">
+      <div class="screen-scroll">
+        <div class="section">
+          <div class="section-title" id="hotspotCount">0 titik terdeteksi</div>
+          <div class="card" id="hotspotList">
+            <div class="empty-state">
+              <span class="em">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                </svg>
+              </span>
+              <div class="ttl">Memuat hotspot</div>
+              <div class="desc">Mengambil data dari satelit NASA</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TREND SCREEN -->
+    <section class="screen" id="screen-tren">
+      <div class="screen-scroll">
+        <div class="section">
+          <div class="section-title">Tren PM2.5 · 7 Hari Terakhir</div>
+          <div class="chart-card">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Statistik Mingguan</div>
+          <div class="card">
+            <div class="list-row">
+              <span class="list-icon" style="background:#007aff;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>
+              </span>
+              <span class="list-label">Rata-rata</span>
+              <span class="list-value strong" id="statAvg">--</span>
+            </div>
+            <div class="list-row">
+              <span class="list-icon" style="background:#ff3b30;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              </span>
+              <span class="list-label">Tertinggi</span>
+              <span class="list-value strong" id="statMax">--</span>
+            </div>
+            <div class="list-row">
+              <span class="list-icon" style="background:#34c759;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+              </span>
+              <span class="list-label">Terendah</span>
+              <span class="list-value strong" id="statMin">--</span>
+            </div>
+            <div class="list-row">
+              <span class="list-icon" style="background:#ff9500;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </span>
+              <span class="list-label">Hari Tidak Sehat</span>
+              <span class="list-value strong" id="statBad">--</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- TAB BAR -->
+  <nav class="tab-bar">
+    <button class="tab-btn active" data-screen="map">
+      <span class="tab-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+          <line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/>
+        </svg>
+      </span>
+      <span class="tab-label">Peta</span>
+    </button>
+    <button class="tab-btn" data-screen="air">
+      <span class="tab-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9.59 4.59A2 2 0 1 1 11 8H2M12.59 19.41A2 2 0 1 0 14 16H2M17.73 7.73A2.5 2.5 0 1 1 19.5 12H2"/>
+        </svg>
+      </span>
+      <span class="tab-label">Udara</span>
+    </button>
+    <button class="tab-btn" data-screen="hotspot">
+      <span class="tab-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+        </svg>
+      </span>
+      <span class="tab-label">Hotspot</span>
+    </button>
+    <button class="tab-btn" data-screen="tren">
+      <span class="tab-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+        </svg>
+      </span>
+      <span class="tab-label">Tren</span>
+    </button>
+  </nav>
+
+  <!-- OVERLAY & MODALS -->
+  <div class="overlay" id="overlay"></div>
+
+  <div class="sheet-modal" id="layerModal">
+    <div class="sheet-head">
+      <div class="ttl">Layer Peta</div>
+      <button class="close" data-close>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="sheet-body">
+      <div class="section-title" style="padding-left:20px;">Data Layer</div>
+      <div class="card">
+        <div class="list-row tappable" data-layer="hotspot" data-state="on">
+          <span class="list-icon" style="background:#ff3b30;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+          </span>
+          <span class="list-label">Hotspot NASA</span>
+          <span class="list-value on" data-toggle>ON</span>
+        </div>
+        <div class="list-row tappable" data-layer="pm25" data-state="off">
+          <span class="list-icon" style="background:#ff9500;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+          </span>
+          <span class="list-label">Polusi PM2.5</span>
+          <span class="list-value" data-toggle>OFF</span>
+        </div>
+        <div class="list-row tappable" data-layer="wind" data-state="off">
+          <span class="list-icon" style="background:#34c759;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2M12.59 19.41A2 2 0 1 0 14 16H2M17.73 7.73A2.5 2.5 0 1 1 19.5 12H2"/></svg>
+          </span>
+          <span class="list-label">Arah Angin</span>
+          <span class="list-value" data-toggle>OFF</span>
+        </div>
+        <div class="list-row tappable" data-layer="kecamatan" data-state="off">
+          <span class="list-icon" style="background:#007aff;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
+          </span>
+          <span class="list-label">Kecamatan Bau-Bau</span>
+          <span class="list-value" data-toggle>OFF</span>
+        </div>
+        <div class="list-row tappable" data-layer="range" data-state="off">
+          <span class="list-icon" style="background:#af52de;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          </span>
+          <span class="list-label">Ring Jarak</span>
+          <span class="list-value" data-toggle>OFF</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet-modal" id="basemapModal">
+    <div class="sheet-head">
+      <div class="ttl">Tampilan Peta</div>
+      <button class="close" data-close>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="sheet-body">
+      <div class="bm-grid">
+        <div class="bm-card active" data-basemap="satellite">
+          <div class="bm-thumb" style="background: linear-gradient(135deg, #4a6b3d 0%, #6b8f5c 40%, #a8c68f 100%);"></div>
+          <div class="bm-name">Satelit</div>
+          <div class="bm-check">✓</div>
+        </div>
+        <div class="bm-card" data-basemap="dark">
+          <div class="bm-thumb" style="background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);"></div>
+          <div class="bm-name">Gelap</div>
+          <div class="bm-check">✓</div>
+        </div>
+        <div class="bm-card" data-basemap="street">
+          <div class="bm-thumb" style="background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%);"></div>
+          <div class="bm-name">Jalan</div>
+          <div class="bm-check">✓</div>
+        </div>
+        <div class="bm-card" data-basemap="topo">
+          <div class="bm-thumb" style="background: linear-gradient(135deg, #a8c68f 0%, #6b8f5c 100%);"></div>
+          <div class="bm-name">Topografi</div>
+          <div class="bm-check">✓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <span id="loadingText">Memuat...</span>
+  </div>
+  <div class="toast" id="toast"></div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+// ==================== KONFIG ====================
+const FIRMS_KEY = '2d25dc1d11cb1e64e8cc9a19e52efc94';
+const BAUBAU = { lat: -5.4667, lon: 122.6167 };
+const HOTSPOT_BBOX = '121.5,-6.5,123.5,-4.5';
+
+const KECAMATAN = [
+  { name: 'Betoambari', lat: -5.4833, lon: 122.6000 },
+  { name: 'Wolio',      lat: -5.4667, lon: 122.6167 },
+  { name: 'Murhum',     lat: -5.4700, lon: 122.6300 },
+  { name: 'Kokalukuna', lat: -5.4500, lon: 122.6300 },
+  { name: 'Sorawolio',  lat: -5.4333, lon: 122.6500 },
+  { name: 'Bungi',      lat: -5.4000, lon: 122.6333 },
+  { name: 'Lea-Lea',    lat: -5.4833, lon: 122.6500 },
+  { name: 'Batupoaro',  lat: -5.4833, lon: 122.6167 }
+];
+
+// ==================== SVG INLINE ICONS ====================
+const ICON = {
+  fire: (s=16,c='#fff') => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`
+};
+
+// ==================== MAP INIT ====================
+L.TileLayer.prototype.options.referrerPolicy = 'strict-origin-when-cross-origin';
+
+const map = L.map('map', {
+  center: [BAUBAU.lat, BAUBAU.lon],
+  zoom: 10, minZoom: 3, maxZoom: 18,
+  zoomControl: false,
+  attributionControl: true,
+  preferCanvas: true
+});
+
+const baseMaps = {
+  satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri', maxZoom: 19 }),
+  dark: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri', maxZoom: 16 }),
+  street: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri', maxZoom: 19 }),
+  topo: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri', maxZoom: 19 })
+};
+let currentBaseMap = baseMaps.satellite;
+currentBaseMap.addTo(map);
+
+// ==================== LAYERS ====================
+const layers = {
+  hotspot: L.markerClusterGroup({
+    chunkedLoading: true, maxClusterRadius: 60,
+    iconCreateFunction: function(cluster) {
+      const count = cluster.getChildCount();
+      let color = '#ff9500', size = 40;
+      if (count > 50) { color = '#ff3b30'; size = 50; }
+      else if (count > 10) { color = '#ff6b00'; size = 46; }
+      return L.divIcon({
+        html: `<div style="
+          background:${color}; color:#fff;
+          border-radius:50%; width:100%; height:100%;
+          display:flex; align-items:center; justify-content:center;
+          font-weight:700; font-size:${size*0.32}px;
+          box-shadow: 0 0 0 4px rgba(255,255,255,0.5), 0 4px 14px ${color}aa;
+        ">${count}</div>`,
+        className: 'custom-cluster',
+        iconSize: L.point(size, size)
+      });
+    }
+  }),
+  pm25: L.layerGroup(),
+  wind: L.layerGroup(),
+  kecamatan: L.layerGroup(),
+  range: L.layerGroup()
+};
+layers.hotspot.addTo(map);
+
+L.marker([BAUBAU.lat, BAUBAU.lon], {
+  icon: L.divIcon({
+    className: '',
+    html: `<div style="width:18px;height:18px;background:#007aff;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 8px rgba(0,122,255,0.2),0 4px 12px rgba(0,0,0,0.3);"></div>`,
+    iconSize: [18, 18], iconAnchor: [9, 9]
+  })
+}).addTo(map).bindPopup(`<div class="pt">Kota Bau-Bau</div><b>Pusat pemantauan</b>`);
+
+KECAMATAN.forEach(k => {
+  L.marker([k.lat, k.lon], {
+    icon: L.divIcon({ className: '', html: `<div class="city-label">${k.name}</div>`, iconSize: [80,20], iconAnchor: [40,10] })
+  }).addTo(layers.kecamatan);
+});
+
+[25, 50, 75, 100].forEach(km => {
+  L.circle([BAUBAU.lat, BAUBAU.lon], {
+    radius: km * 1000, color: '#007aff', weight: 1.5,
+    dashArray: '4,6', fill: false, opacity: 0.4
+  }).bindTooltip(`${km} km`, { sticky: true }).addTo(layers.range);
+});
+
+// ==================== UTILS ====================
+function showToast(msg, type = 'info', duration = 3000) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  setTimeout(() => { el.className = 'toast ' + type; }, duration);
+}
+function setLoading(on, text = 'Memuat...') {
+  document.getElementById('loading').classList.toggle('active', on);
+  document.getElementById('loadingText').textContent = text;
+}
+function parseCSV(csvText) {
+  const lines = csvText.trim().split(/\r?\n/);
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(',').map(h => h.trim());
+  const out = [];
+  for (let i = 1; i < lines.length; i++) {
+    const values = lines[i].split(',');
+    if (values.length < headers.length) continue;
+    const o = {};
+    headers.forEach((h, idx) => o[h] = values[idx] ? values[idx].trim() : '');
+    out.push(o);
+  }
+  return out;
+}
+function distanceKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+function bearingTo(lat1, lon1, lat2, lon2) {
+  const phi1 = lat1 * Math.PI / 180;
+  const phi2 = lat2 * Math.PI / 180;
+  const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+  const y = Math.sin(deltaLambda) * Math.cos(phi2);
+  const x = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(deltaLambda);
+  return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+}
+function bearingName(deg) {
+  return ['Utara','Timur Laut','Timur','Tenggara','Selatan','Barat Daya','Barat','Barat Laut'][Math.round(deg / 45) % 8];
+}
+function getPM25Color(pm) {
+  if (pm <= 12) return '#34c759';
+  if (pm <= 35) return '#ffcc00';
+  if (pm <= 55) return '#ff9500';
+  if (pm <= 150) return '#ff3b30';
+  if (pm <= 250) return '#af52de';
+  return '#5c0a0a';
+}
+function getPM25Category(pm) {
+  if (pm <= 12) return { label: 'Baik', color: '#34c759' };
+  if (pm <= 35) return { label: 'Sedang', color: '#ffcc00' };
+  if (pm <= 55) return { label: 'Sensitif', color: '#ff9500' };
+  if (pm <= 150) return { label: 'Tidak Sehat', color: '#ff3b30' };
+  if (pm <= 250) return { label: 'Sangat Tdk Sehat', color: '#af52de' };
+  return { label: 'Berbahaya', color: '#5c0a0a' };
+}
+function getWindDirName(deg) {
+  return ['U','TL','T','TG','S','BD','B','BL'][Math.round(deg / 45) % 8];
+}
+function shadeColor(hex, pct) {
+  const n = parseInt(hex.replace('#',''), 16);
+  const a = Math.round(2.55 * pct);
+  const R = Math.max(0, Math.min(255, (n >> 16) + a));
+  const G = Math.max(0, Math.min(255, ((n >> 8) & 0xff) + a));
+  const B = Math.max(0, Math.min(255, (n & 0xff) + a));
+  return '#' + (0x1000000 + R*0x10000 + G*0x100 + B).toString(16).slice(1);
+}
+
+let baubauWindData = null;
+let allHotspots = [];
+let trendChartInstance = null;
+let forecastHourlyData = null;
+
+// ==================== HOTSPOT ====================
+async function loadHotspots() {
+  const url = `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${FIRMS_KEY}/VIIRS_SNPP_NRT/${HOTSPOT_BBOX}/3`;
+  layers.hotspot.clearLayers();
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const csvText = await res.text();
+    if (csvText.includes('Invalid')) throw new Error('MAP_KEY invalid');
+    const data = parseCSV(csvText);
+    allHotspots = [];
+
+    data.forEach(h => {
+      const lat = parseFloat(h.latitude), lon = parseFloat(h.longitude);
+      if (isNaN(lat) || isNaN(lon)) return;
+      const conf = h.confidence || '';
+      const dist = distanceKm(BAUBAU.lat, BAUBAU.lon, lat, lon);
+      const bearing = bearingTo(BAUBAU.lat, BAUBAU.lon, lat, lon);
+      const cl = conf.toLowerCase();
+      let level = 'low';
+      if (cl === 'high' || cl === 'h' || parseInt(conf) >= 80) level = 'high';
+      else if (cl === 'nominal' || cl === 'n' || parseInt(conf) >= 30) level = 'nominal';
+      const color = level === 'high' ? '#ff3b30' : level === 'nominal' ? '#ff9500' : '#ffcc00';
+
+      const info = { lat, lon, dist, bearing, conf, level, color,
+        satellite: h.satellite || '-', date: h.acq_date || '-',
+        time: h.acq_time || '-', frp: h.frp || '-' };
+      allHotspots.push(info);
+
+      const size = level === 'high' ? 16 : level === 'nominal' ? 14 : 12;
+      const icon = L.divIcon({
+        className: '',
+        html: `<div style="width:${size}px;height:${size}px;background:${color};border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px ${color}cc;"></div>`,
+        iconSize: [size, size], iconAnchor: [size/2, size/2]
+      });
+      L.marker([lat, lon], { icon }).bindPopup(buildHotspotPopup(info)).addTo(layers.hotspot);
+    });
+
+    renderHotspotList();
+    return data.length;
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+}
+
+function buildHotspotPopup(h) {
+  let windAnalysis = '';
+  if (baubauWindData) {
+    const windDirTo = (baubauWindData.dir + 180) % 360;
+    const diff = Math.abs(((windDirTo - h.bearing + 540) % 360) - 180);
+    if (diff < 45) {
+      windAnalysis = `<div style="background:#ffe5e5;padding:6px 8px;border-radius:8px;margin-top:8px;font-size:12px;color:#991b1b;">Angin mengarah ke hotspot</div>`;
+    } else if (diff > 135) {
+      windAnalysis = `<div style="background:#e5f7e5;padding:6px 8px;border-radius:8px;margin-top:8px;font-size:12px;color:#15803d;">Angin menjauhi hotspot</div>`;
+    }
+  }
+  return `
+    <div class="pt">Titik Panas</div>
+    <b>Jarak:</b> ${h.dist.toFixed(1)} km · ${bearingName(h.bearing)}<br>
+    <hr>
+    <b>Confidence:</b> ${h.conf}<br>
+    <b>Satelit:</b> ${h.satellite}<br>
+    <b>Waktu:</b> ${h.date} ${h.time} UTC<br>
+    <b>FRP:</b> ${h.frp} MW<br>
+    ${windAnalysis}
+    <hr>
+    <a class="link" href="https://www.google.com/maps?q=${h.lat},${h.lon}" target="_blank">Buka di Google Maps</a>
+  `;
+}
+
+// ==================== AIR QUALITY ====================
+async function loadAirQuality() {
+  const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${BAUBAU.lat}&longitude=${BAUBAU.lon}&current=pm2_5,pm10,us_aqi&hourly=pm2_5,us_aqi&forecast_days=2&timezone=Asia%2FMakassar`;
+  try {
+    const res = await fetch(url);
+    const json = await res.json();
+    const c = json.current || {};
+    const pm25 = c.pm2_5 ?? 0;
+    const color = getPM25Color(pm25);
+    const cat = getPM25Category(pm25);
+
+    document.getElementById('heroValue').textContent = pm25.toFixed(1);
+    document.getElementById('hero').style.background =
+      `linear-gradient(160deg, ${color} 0%, ${shadeColor(color, -30)} 100%)`;
+    document.getElementById('heroStatus').textContent = cat.label;
+    document.getElementById('heroUpdate').textContent =
+      c.time ? `Update ${c.time.split('T')[1]}` : '-';
+
+    const badge = document.getElementById('mapAqBadge');
+    badge.style.background = color;
+    document.getElementById('mapAqNum').textContent = Math.round(pm25);
+    document.getElementById('mapAqTitle').textContent = cat.label;
+    document.getElementById('mapAqSub').innerHTML =
+      `<span>PM2.5 ${pm25.toFixed(1)}</span><span>AQI ${c.us_aqi ?? '-'}</span>`;
+
+    const ind = document.getElementById('statusIndicator');
+    ind.className = 'indicator';
+    if (pm25 <= 12) ind.classList.add('green');
+    else if (pm25 <= 35) ind.classList.add('yellow');
+    else if (pm25 <= 55) ind.classList.add('orange');
+    else ind.classList.add('red');
+
+    document.getElementById('statusValue').textContent =
+      `${pm25.toFixed(1)} µg/m³ · ${cat.label}`;
+    document.getElementById('airAqi').textContent = c.us_aqi ?? '-';
+    document.getElementById('airPm10').textContent = (c.pm10 ?? 0).toFixed(1) + ' µg/m³';
+    document.getElementById('alertCard').classList.toggle('show', pm25 > 55);
+
+    if (json.hourly) {
+      forecastHourlyData = {
+        time: json.hourly.time, pm25: json.hourly.pm2_5,
+        aqi: json.hourly.us_aqi, currentTime: c.time
+      };
+      updateForecastSlider();
+    }
+  } catch (err) { console.error(err); }
+}
+
+async function loadWeather() {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${BAUBAU.lat}&longitude=${BAUBAU.lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m&timezone=Asia%2FMakassar`;
+  try {
+    const res = await fetch(url);
+    const json = await res.json();
+    const c = json.current || {};
+    document.getElementById('airTemp').textContent = (c.temperature_2m ?? 0).toFixed(1) + '°C';
+    document.getElementById('airHum').textContent = (c.relative_humidity_2m ?? 0) + '%';
+    document.getElementById('airWind').textContent = (c.wind_speed_10m ?? 0).toFixed(1) + ' km/h';
+    const dir = c.wind_direction_10m ?? 0;
+    document.getElementById('airWindDir').textContent = `${getWindDirName(dir)} (${dir.toFixed(0)}°)`;
+    baubauWindData = { speed: c.wind_speed_10m ?? 0, dir };
+  } catch (err) { console.error(err); }
+}
+
+// ==================== LAYER PM2.5 ====================
+async function loadPM25Layer() {
+  const COLS = 5, ROWS = 5, RANGE = 0.5;
+  const lats = [], lons = [];
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++) {
+      lats.push((BAUBAU.lat - RANGE/2 + r * RANGE/(ROWS-1)).toFixed(3));
+      lons.push((BAUBAU.lon - RANGE/2 + c * RANGE/(COLS-1)).toFixed(3));
+    }
+  const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lats.join(',')}&longitude=${lons.join(',')}&current=pm2_5&timezone=Asia%2FMakassar`;
+  try {
+    const res = await fetch(url);
+    const json = await res.json();
+    const results = Array.isArray(json) ? json : [json];
+    layers.pm25.clearLayers();
+    results.forEach(item => {
+      const lat = item.latitude, lon = item.longitude;
+      const pm25 = item.current?.pm2_5 ?? 0;
+      const color = getPM25Color(pm25);
+      const size = 30;
+      const icon = L.divIcon({
+        className: '',
+        html: `<div class="pm-marker" style="width:${size}px;height:${size}px;background:${color};">${Math.round(pm25)}</div>`,
+        iconSize: [size, size], iconAnchor: [size/2, size/2]
+      });
+      L.marker([lat, lon], { icon })
+        .bindPopup(`<div class="pt">PM2.5</div><b>${pm25.toFixed(1)} µg/m³</b><br>${getPM25Category(pm25).label}`)
+        .addTo(layers.pm25);
+    });
+  } catch (err) { console.error(err); }
+}
+
+// ==================== LAYER ANGIN ====================
+async function loadWindLayer() {
+  const COLS = 3, ROWS = 3, RANGE = 0.7;
+  const lats = [], lons = [];
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++) {
+      lats.push((BAUBAU.lat - RANGE/2 + r * RANGE/(ROWS-1)).toFixed(3));
+      lons.push((BAUBAU.lon - RANGE/2 + c * RANGE/(COLS-1)).toFixed(3));
+    }
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats.join(',')}&longitude=${lons.join(',')}&current=wind_speed_10m,wind_direction_10m&timezone=Asia%2FMakassar`;
+  try {
+    const res = await fetch(url);
+    const json = await res.json();
+    const results = Array.isArray(json) ? json : [json];
+    layers.wind.clearLayers();
+    results.forEach(item => {
+      const lat = item.latitude, lon = item.longitude;
+      const c = item.current || {};
+      const speed = c.wind_speed_10m ?? 0;
+      const dir = c.wind_direction_10m ?? 0;
+      const arrowDir = (dir + 180) % 360;
+      let color = '#34c759';
+      if (speed > 20) color = '#ff3b30';
+      else if (speed > 12) color = '#ff9500';
+      else if (speed > 6) color = '#ffcc00';
+      const size = 34;
+      const icon = L.divIcon({
+        className: 'wind-svg',
+        html: `<svg width="${size}" height="${size}" viewBox="0 0 30 30" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));"><g transform="rotate(${arrowDir}, 15, 15)"><path d="M15 3 L22 24 L15 19 L8 24 Z" fill="${color}" stroke="#fff" stroke-width="1.2"/></g></svg>`,
+        iconSize: [size, size], iconAnchor: [size/2, size/2]
+      });
+      L.marker([lat, lon], { icon })
+        .bindPopup(`<div class="pt">Angin</div><b>${speed.toFixed(1)} km/h</b><br>Dari ${getWindDirName(dir)}`)
+        .addTo(layers.wind);
+    });
+  } catch (err) { console.error(err); }
+}
+
+// ==================== TREND ====================
+async function loadTrend() {
+  const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${BAUBAU.lat}&longitude=${BAUBAU.lon}&hourly=pm2_5&past_days=7&forecast_days=1&timezone=Asia%2FMakassar`;
+  try {
+    const res = await fetch(url);
+    const json = await res.json();
+    if (!json.hourly) return;
+    const dailyMap = {};
+    json.hourly.time.forEach((t, i) => {
+      const date = t.split('T')[0];
+      const val = json.hourly.pm2_5[i];
+      if (val == null) return;
+      if (!dailyMap[date]) dailyMap[date] = [];
+      dailyMap[date].push(val);
+    });
+    const dates = Object.keys(dailyMap).sort();
+    const labels = dates.map(d => new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
+    const averages = dates.map(d => {
+      const arr = dailyMap[d];
+      return arr.reduce((a, b) => a + b, 0) / arr.length;
+    });
+    const vals = averages.filter(v => !isNaN(v));
+    document.getElementById('statAvg').textContent = (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1) + ' µg/m³';
+    document.getElementById('statMax').textContent = Math.max(...vals).toFixed(1) + ' µg/m³';
+    document.getElementById('statMin').textContent = Math.min(...vals).toFixed(1) + ' µg/m³';
+    document.getElementById('statBad').textContent = vals.filter(v => v > 55).length + ' hari';
+
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    if (trendChartInstance) trendChartInstance.destroy();
+    trendChartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'PM2.5', data: averages,
+          borderColor: '#ff3b30',
+          backgroundColor: 'rgba(255,59,48,0.1)',
+          borderWidth: 2.5, fill: true, tension: 0.4,
+          pointBackgroundColor: averages.map(v => getPM25Color(v)),
+          pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#8e8e93', font: { size: 11 } } },
+          x: { grid: { display: false }, ticks: { color: '#8e8e93', font: { size: 11 } } }
+        }
+      }
+    });
+  } catch (err) { console.error(err); }
+}
+
+// ==================== SLIDER ====================
+function updateForecastSlider() {
+  const slider = document.getElementById('timeSlider');
+  const display = document.getElementById('timeDisplay');
+  const fPm = document.getElementById('fcastPm25');
+  const fAqi = document.getElementById('fcastAqi');
+  if (!forecastHourlyData) return;
+  const idxNow = forecastHourlyData.time.findIndex(t => t >= forecastHourlyData.currentTime);
+  const startIdx = idxNow >= 0 ? idxNow : 0;
+
+  function apply(offset) {
+    const idx = startIdx + offset;
+    if (idx >= forecastHourlyData.time.length) return;
+    const t = forecastHourlyData.time[idx];
+    const pm = forecastHourlyData.pm25[idx];
+    const aqi = forecastHourlyData.aqi[idx];
+    fPm.textContent = pm != null ? pm.toFixed(1) : '--';
+    fPm.style.color = pm != null ? getPM25Color(pm) : '#000';
+    fAqi.textContent = aqi ?? '--';
+    const dt = new Date(t);
+    display.textContent = offset === 0 ? 'Sekarang' : `+${offset} jam · ${dt.getHours().toString().padStart(2,'0')}:00`;
+  }
+  slider.oninput = () => apply(parseInt(slider.value));
+  apply(0);
+}
+
+// ==================== HOTSPOT LIST ====================
+function renderHotspotList() {
+  const list = document.getElementById('hotspotList');
+  const countEl = document.getElementById('hotspotCount');
+  if (allHotspots.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="ttl">Tidak ada hotspot</div><div class="desc">Tidak terdeteksi titik panas dalam 3 hari terakhir</div></div>`;
+    countEl.textContent = '0 titik terdeteksi';
+    return;
+  }
+  const sorted = [...allHotspots].sort((a, b) => a.dist - b.dist);
+  countEl.textContent = `${sorted.length} titik · 3 hari terakhir`;
+  list.innerHTML = sorted.map((h, i) => `
+    <div class="hotspot-item" data-idx="${i}">
+      <div class="hs-dot ${h.level}">${ICON.fire(16)}</div>
+      <div class="hs-info">
+        <div class="row-1">
+          <span class="dist">${h.dist.toFixed(1)} km</span>
+          <span class="bearing">${bearingName(h.bearing)}</span>
+        </div>
+        <div class="row-2">
+          <span>${h.date}</span>
+          <span>${h.frp} MW</span>
+        </div>
+      </div>
+      <span class="hs-chevron">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </span>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.hotspot-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const h = sorted[parseInt(el.dataset.idx)];
+      map.setView([h.lat, h.lon], 14);
+      layers.hotspot.eachLayer(layer => {
+        if (layer.getLatLng && Math.abs(layer.getLatLng().lat - h.lat) < 1e-5) {
+          layer.openPopup();
+        }
+      });
+      switchScreen('map');
+    });
+  });
+}
+
+// ==================== NAVIGATION ====================
+function switchScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.tab-btn[data-screen="' + name + '"]').classList.add('active');
+  const titles = {
+    map: 'Monitoring Kualitas Udara dan Karhutla Kota Baubau',
+    air: 'Kualitas Udara',
+    hotspot: 'Hotspot Karhutla',
+    tren: 'Tren PM2.5'
+  };
+  document.getElementById('appTitle').textContent = titles[name] || 'Monitoring Kualitas Udara dan Karhutla Kota Baubau';
+  if (name === 'map') setTimeout(() => map.invalidateSize(), 100);
+}
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => switchScreen(btn.dataset.screen));
+});
+document.getElementById('mapCard').addEventListener('click', () => switchScreen('air'));
+
+// ==================== MODALS ====================
+const overlay = document.getElementById('overlay');
+const layerModal = document.getElementById('layerModal');
+const basemapModal = document.getElementById('basemapModal');
+
+function openModal(modal) {
+  overlay.classList.add('show');
+  modal.classList.add('show');
+}
+function closeModals() {
+  overlay.classList.remove('show');
+  layerModal.classList.remove('show');
+  basemapModal.classList.remove('show');
+}
+document.getElementById('layerBtn').addEventListener('click', () => openModal(layerModal));
+document.getElementById('basemapBtn').addEventListener('click', () => openModal(basemapModal));
+overlay.addEventListener('click', closeModals);
+document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
+
+// ==================== BASEMAP ====================
+document.querySelectorAll('.bm-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const key = card.dataset.basemap;
+    if (currentBaseMap) map.removeLayer(currentBaseMap);
+    currentBaseMap = baseMaps[key];
+    currentBaseMap.addTo(map);
+    Object.values(layers).forEach(l => {
+      if (map.hasLayer(l)) { map.removeLayer(l); map.addLayer(l); }
+    });
+    document.querySelectorAll('.bm-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    setTimeout(closeModals, 250);
+  });
+});
+
+// ==================== LAYER TOGGLE ====================
+document.querySelectorAll('[data-layer]').forEach(item => {
+  item.addEventListener('click', () => {
+    const key = item.dataset.layer;
+    if (!key) return;
+    const isOn = item.dataset.state === 'on';
+    item.dataset.state = isOn ? 'off' : 'on';
+    const toggle = item.querySelector('[data-toggle]');
+    if (toggle) {
+      toggle.textContent = isOn ? 'OFF' : 'ON';
+      toggle.classList.toggle('on', !isOn);
+    }
+    if (!isOn) {
+      map.addLayer(layers[key]);
+      if (key === 'pm25' && layers.pm25.getLayers().length === 0) loadPM25Layer();
+      if (key === 'wind' && layers.wind.getLayers().length === 0) loadWindLayer();
+    } else {
+      map.removeLayer(layers[key]);
+    }
+  });
+});
+
+// ==================== MAP CONTROLS ====================
+document.getElementById('zoomIn').addEventListener('click', () => map.zoomIn());
+document.getElementById('zoomOut').addEventListener('click', () => map.zoomOut());
+document.getElementById('fullscreenBtn').addEventListener('click', () => {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+  else document.exitFullscreen();
+});
+document.getElementById('refreshBtn').addEventListener('click', () => loadAll(true));
+
+// ==================== LOCATE ====================
+document.getElementById('locateBtn').addEventListener('click', () => {
+  if (!navigator.geolocation) return showToast('Geolocation tidak didukung', 'error');
+  showToast('Mencari lokasi...', 'info');
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const { latitude: lat, longitude: lon } = pos.coords;
+    switchScreen('map');
+    map.setView([lat, lon], 14);
+    const mk = L.circleMarker([lat, lon], {
+      radius: 10, fillColor: '#007aff', color: '#fff', weight: 3, fillOpacity: 1
+    }).addTo(map).bindPopup('<div class="pt">Lokasi Anda</div>Memuat...').openPopup();
+    try {
+      const aqUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=pm2_5,pm10,us_aqi`;
+      const res = await fetch(aqUrl);
+      const aq = await res.json();
+      const pm25 = aq.current?.pm2_5 ?? 0;
+      const color = getPM25Color(pm25);
+      const cat = getPM25Category(pm25);
+      mk.setPopupContent(`
+        <div class="pt">Lokasi Anda</div>
+        <b>Jarak ke Bau-Bau:</b> ${distanceKm(lat, lon, BAUBAU.lat, BAUBAU.lon).toFixed(1)} km<br>
+        <hr>
+        <b>PM2.5:</b> <span style="color:${color};font-weight:700;">${pm25.toFixed(1)} µg/m³</span><br>
+        <b>Status:</b> ${cat.label}
+      `);
+      showToast('Data lokasi dimuat', 'success');
+    } catch (err) { showToast('Gagal memuat data', 'error'); }
+  }, err => showToast('Gagal: ' + err.message, 'error'));
+});
+
+// ==================== MAP CLICK ====================
+map.on('click', async (e) => {
+  const { lat, lng } = e.latlng;
+  const popup = L.popup().setLatLng(e.latlng)
+    .setContent('<div style="padding:8px;text-align:center;">Memuat...</div>')
+    .openOn(map);
+  try {
+    const aqUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lng}&current=pm2_5,pm10,us_aqi`;
+    const res = await fetch(aqUrl);
+    const aq = await res.json();
+    const pm25 = aq.current?.pm2_5 ?? 0;
+    const color = getPM25Color(pm25);
+    const cat = getPM25Category(pm25);
+    popup.setContent(`
+      <div class="pt">Detail Lokasi</div>
+      <b>Jarak dari Bau-Bau:</b> ${distanceKm(lat, lng, BAUBAU.lat, BAUBAU.lon).toFixed(1)} km<br>
+      <hr>
+      <b>PM2.5:</b> <span style="color:${color};font-weight:700;">${pm25.toFixed(1)} µg/m³</span><br>
+      <b>Status:</b> ${cat.label}<br>
+      <b>US AQI:</b> ${aq.current?.us_aqi ?? '-'}
+    `);
+  } catch (err) {
+    popup.setContent('<div style="color:#ff3b30;">Gagal memuat</div>');
+  }
+});
+
+// ==================== LOAD ALL ====================
+async function loadAll(showMsg = false) {
+  setLoading(true, 'Memuat data...');
+  try {
+    await Promise.all([loadHotspots(), loadAirQuality(), loadWeather(), loadTrend()]);
+    if (showMsg) showToast('Data diperbarui', 'success');
+  } catch (err) { console.error(err); }
+  finally { setLoading(false); }
+}
+
+// ==================== SPLASH SCREEN ====================
+(function() {
+  const splash = document.getElementById('splash');
+  if (!splash) return;
+
+  const hideSplash = () => {
+    splash.classList.add('hide');
+    setTimeout(() => splash.remove(), 700);
+  };
+
+  const fallbackTimer = setTimeout(hideSplash, 3000);
+
+  const checkReady = setInterval(() => {
+    const val = document.getElementById('statusValue');
+    if (val && val.textContent && !val.textContent.includes('Memuat')) {
+      clearInterval(checkReady);
+      clearTimeout(fallbackTimer);
+      setTimeout(hideSplash, 500);
+    }
+  }, 200);
+})();
+
+// ==================== INIT ====================
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    map.invalidateSize();
+    loadAll();
+  }, 400);
+  window.addEventListener('resize', () => map.invalidateSize());
+  setInterval(() => {
+    loadHotspots(); loadAirQuality(); loadWeather(); loadTrend();
+    if (document.querySelector('[data-layer="pm25"]').dataset.state === 'on') loadPM25Layer();
+    if (document.querySelector('[data-layer="wind"]').dataset.state === 'on') loadWindLayer();
+  }, 10 * 60 * 1000);
+});
+</script>
+</body>
+</html>
