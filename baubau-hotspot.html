@@ -1781,7 +1781,7 @@ function switchScreen(name) {
 
   // Update app bar title
   const titles = { map: 'Bau-Bau Monitor', air: 'Kualitas Udara', hotspot: 'Hotspot Karhutla', tren: 'Tren PM2.5' };
-  document.getElementById('appTitle').textContent = titles[name] || 'Kota Baubau';
+  document.getElementById('appTitle').textContent = titles[name] || 'Bau-Bau Monitor';
 
   // Reset map
   if (name === 'map') setTimeout(() => map.invalidateSize(), 50);
